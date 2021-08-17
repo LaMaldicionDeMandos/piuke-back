@@ -4,8 +4,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-const indexRouter = require('./routes/index');
-const meliRouter = require('./routes/meli');
+const healthRouter = require('./routes/helth.router');
+const productsRouter = require('./routes/products.router');
+const meliRouter = require('./routes/meli.router');
 
 const app = express();
 
@@ -16,7 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', indexRouter);
+app.use('health', healthRouter);
+app.use('/products', productsRouter);
 app.use('/meli/', meliRouter);
 
 module.exports = app;
