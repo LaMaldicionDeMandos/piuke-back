@@ -17,6 +17,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
-app.use('/auth/', meliRouter);
+app.use('/meli/', meliRouter);
 
 module.exports = app;
