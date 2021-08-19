@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const service = require('../services/meli.service');
+const meliService = require('../services/meli.service');
 
 router.get('', (req, res, next) => {
-    res.send('En construcción');
+    meliService.getProducts()
+        .then(products => res.send(products))
+        .catch(e => res.status(400).send());
 });
 
 module.exports = router;
