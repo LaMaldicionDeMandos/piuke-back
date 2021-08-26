@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const meliService = require('../services/meli.service');
+const productsService = require('../services/products.service');
 const keepPropertiesAfter = require('./keepPropertiesAfter');
 const { body, validationResult } = require('express-validator');
 
@@ -12,11 +13,20 @@ errorMiddleware = (req, res, next) => {
     next();
 };
 
+router.get('', (req, res) => {
+    productsService.getProductBases()
+        .then(products => res.send(products))
+        .catch(e => res.status(400).send());
+});
+
+/*
 router.get('', [keepPropertiesAfter('id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status')],(req, res) => {
     meliService.getProducts()
         .then(products => res.send(products))
         .catch(e => res.status(400).send());
 });
+
+ */
 
 router.post('',
     body('code').not().isEmpty(),
@@ -25,6 +35,8 @@ router.post('',
     errorMiddleware,
     (req, res) => {
     console.log(`Nuevo producto => ${JSON.stringify(req.body)}`);
+    productsService.newProduct(req.body)
+        .then(product => res.status(201).send(product));
     res.sendStatus(201);
 });
 
