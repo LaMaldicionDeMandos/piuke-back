@@ -15,9 +15,8 @@
     "express-partial-response": "^1.0.4",
     "express-validator": "^6.12.1",
     "lodash": "^4.17.21",
+    "mariadb": "^2.5.4",
     "morgan": "~1.9.1",
-    "pg": "^8.7.1",
-    "pg-hstore": "^2.3.4",
     "sequelize": "^6.6.5",
     "sqlite3": "^5.0.2"
   }
