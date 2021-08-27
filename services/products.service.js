@@ -1,4 +1,8 @@
 const db = require('./storage.service');
+const meliService = require('./meli.service');
+
+const _ = require('lodash');
+
 const ProductBase = db.models.ProductBase;
 
 class ProductsService {
@@ -18,7 +22,27 @@ class ProductsService {
     }
 
     getAllProducts() {
-        return this.getProductBases();
+        return this.getProductBases()
+            .then(productBases => {
+               const ids = _.chain(productBases)
+                   .filter('meli_id')
+                   .map('meli_id').value();
+
+               return {productBases, ids};
+            })
+            .then(map =>
+                meliService.getProductsByIds(map.ids)
+                    .then(items => {
+                        return _.map(map.productBases, base => {
+                            const detail = _.find(items, {id: base.meli_id});
+                            console.log('Detail: ' + JSON.stringify(detail));
+                            console.log('Base: ' + JSON.stringify(base));
+                            const r = detail ? _.assignIn(detail, base.toJSON()) : base;
+                            console.log('Result: ' + JSON.stringify(r));
+                            return r;
+                        });
+                    })
+            );
     }
 
     update(code, change) {

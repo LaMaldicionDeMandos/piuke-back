@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const meliService = require('../services/meli.service');
 const productsService = require('../services/products.service');
 const keepPropertiesAfter = require('./keepPropertiesAfter');
 const { body, validationResult } = require('express-validator');
@@ -15,7 +14,10 @@ errorMiddleware = (req, res, next) => {
 
 router.get('', [keepPropertiesAfter('id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,code,cost')],(req, res) => {
     productsService.getAllProducts()
-        .then(products => res.send(products))
+        .then(products => {
+            console.log("Products: " + JSON.stringify(products));
+            res.send(products)
+        })
         .catch(e => res.status(400).send());
 });
 

@@ -55,6 +55,12 @@ class MeliService {
         getCredentials();
     }
 
+    getProductsByIds(ids) {
+        const pagedIds = _.chunk(ids, REQUEST_LIMIT);
+        const promises = _.map(pagedIds, ids => getItemDetails(ids));
+        return Promise.all(promises).then(_.flatten);
+    }
+
     getProducts(offset = 0) {
         return getCredentials()
             .then(credentials => credentials.credentials)
