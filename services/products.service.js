@@ -16,15 +16,16 @@ class ProductsService {
     getProductBases() {
         return ProductBase.findAll();
     }
-/*
-    replaceResource(resource) {
-        return Resource.update(resource, { where: {_id: resource._id}})
-            .then(r => {
-                console.log(`Resource updated: ${JSON.stringify(r)}`);
-                return r;
-            });
+
+    getAllProducts() {
+        return this.getProductBases();
     }
-    */
+
+    update(code, change) {
+        return ProductBase.findOne({where: {code: code}})
+            .then(product => product || Promise.reject(new Error('No product')))
+            .then(product => product.update(change));
+    }
 }
 
 const productService = new ProductsService();

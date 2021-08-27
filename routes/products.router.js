@@ -13,20 +13,17 @@ errorMiddleware = (req, res, next) => {
     next();
 };
 
-router.get('', (req, res) => {
-    productsService.getProductBases()
+router.get('', [keepPropertiesAfter('id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,code,cost')],(req, res) => {
+    productsService.getAllProducts()
         .then(products => res.send(products))
         .catch(e => res.status(400).send());
 });
 
-/*
-router.get('', [keepPropertiesAfter('id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status')],(req, res) => {
-    meliService.getProducts()
-        .then(products => res.send(products))
+router.patch('/:code',(req, res) => {
+    productsService.update(req.params.code, req.body)
+        .then((p) => res.send(p))
         .catch(e => res.status(400).send());
 });
-
- */
 
 router.post('',
     body('code').not().isEmpty(),
