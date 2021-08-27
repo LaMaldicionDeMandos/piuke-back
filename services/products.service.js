@@ -35,11 +35,7 @@ class ProductsService {
                     .then(items => {
                         return _.map(map.productBases, base => {
                             const detail = _.find(items, {id: base.meli_id});
-                            console.log('Detail: ' + JSON.stringify(detail));
-                            console.log('Base: ' + JSON.stringify(base));
-                            const r = detail ? _.assignIn(detail, base.toJSON()) : base;
-                            console.log('Result: ' + JSON.stringify(r));
-                            return r;
+                            return detail ? _.assignIn(detail, base.toJSON()) : base;
                         });
                     })
             );
