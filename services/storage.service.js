@@ -14,7 +14,17 @@ sequelize.define('ProductBase', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
     code: {type: DataTypes.STRING, allowNull: false},
     cost: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
-    meli_id: {type: DataTypes.STRING, allowNull: true, defaultValue: ''}
+    meli_ids: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: '[]',
+        set(ids) {
+            this.setDataValue('meli_ids',JSON.stringify(ids));
+        },
+        get() {
+            return JSON.parse(this.getDataValue('meli_ids'));
+        }
+    }
 });
 
 (async () => {

@@ -18,15 +18,16 @@ class ProductsService {
     }
 
     getProductBases() {
-        return ProductBase.findAll();
+        return ProductBase.findAll().catch(e => console.log(JSON.stringify(e)));
     }
 
     getAllProducts() {
         return this.getProductBases()
             .then(productBases => {
                const ids = _.chain(productBases)
-                   .filter('meli_id')
-                   .map('meli_id').value();
+                   .filter(p => !_.isEmpty(p.meli_ids))
+                   .map('meli_ids')
+                   .flatten().value();
 
                return {productBases, ids};
             })
@@ -34,8 +35,13 @@ class ProductsService {
                 meliService.getProductsByIds(map.ids)
                     .then(items => {
                         return _.map(map.productBases, base => {
-                            const detail = _.find(items, {id: base.meli_id});
-                            return detail ? _.assignIn(detail, base.toJSON()) : base;
+                            let result = base.toJSON();
+                            result['meli_items'] = [];
+                            _.each(base.meli_ids, (id) => {
+                                const detail = _.find(items, {id: id});
+                                if (detail) result.meli_items.push(detail);
+                            });
+                            return result;
                         });
                     })
             );
