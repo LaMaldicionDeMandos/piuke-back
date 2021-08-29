@@ -27,6 +27,14 @@ router.patch('/:code',(req, res) => {
         .catch(e => res.status(400).send());
 });
 
+router.post('/:code/meli_ids',
+    body('meli_ids').not().isEmpty(),
+    errorMiddleware,
+    (req, res) => {
+        console.log(`Nuevos Ids para el producto => ${req.params.code} ids: ${JSON.stringify(req.body)}`);
+        res.status(201).send({ok: 'ok'});
+    });
+
 router.post('',
     body('code').not().isEmpty(),
     body('cost').not().isEmpty(),
@@ -36,7 +44,6 @@ router.post('',
     console.log(`Nuevo producto => ${JSON.stringify(req.body)}`);
     productsService.newProduct(req.body)
         .then(product => res.status(201).send(product));
-    res.sendStatus(201);
 });
 
 module.exports = router;
