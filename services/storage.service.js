@@ -32,7 +32,7 @@ sequelize.define('ProductBase', {
     try {
         await sequelize.authenticate();
         console.log('Authenticated');
-        await sequelize.models.ProductBase.sync({alter: false});
+        await sequelize.models.ProductBase.sync({alter: true});
         console.log('Synchronized');
     } catch (e) {
         console.log("Error " + JSON.stringify(e));
