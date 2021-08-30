@@ -57,6 +57,7 @@ router.post('',
 
 router.delete('/:id', (req, res) => {
         console.log(`Borrar producto => ${req.params.id}`);
+        res.sendStatus(200);
     });
 
 module.exports = router;
