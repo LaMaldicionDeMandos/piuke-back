@@ -36,6 +36,7 @@ class ProductsService {
                     .then(items => {
                         return _.map(map.productBases, base => {
                             let result = base.toJSON();
+                            console.log(`Result: ${JSON.stringify(result)}`);
                             result['meli_items'] = [];
                             _.each(base.meli_ids, (id) => {
                                 const detail = _.find(items, {id: id});
