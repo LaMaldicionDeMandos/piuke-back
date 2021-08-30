@@ -13,7 +13,7 @@ const sequelize = new Sequelize(connectionParam);
 sequelize.define('ProductBase', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
     code: {type: DataTypes.STRING, allowNull: false},
-    cost: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
+    cost: {type: DataTypes.DECIMAL , allowNull: false},
     meli_ids: {
         type: DataTypes.STRING,
         allowNull: true,
