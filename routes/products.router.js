@@ -12,7 +12,7 @@ errorMiddleware = (req, res, next) => {
     next();
 };
 
-router.get('', [keepPropertiesAfter('id,meli_items(title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id),code,cost')],(req, res) => {
+router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id),code,cost')],(req, res) => {
     productsService.getAllProducts()
         .then(products => {
             console.log("Products: " + JSON.stringify(products));
