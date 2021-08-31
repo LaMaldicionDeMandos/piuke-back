@@ -53,6 +53,10 @@ class ProductsService {
             .then(product => product || Promise.reject(new Error('No product')))
             .then(product => product.update(change));
     }
+
+    remove(id) {
+        return ProductBase.destroy({where: {_id: id}});
+    }
 }
 
 const productService = new ProductsService();
