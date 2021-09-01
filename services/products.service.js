@@ -57,6 +57,11 @@ class ProductsService {
     remove(id) {
         return ProductBase.destroy({where: {_id: id}});
     }
+
+    syncWithMeli(code) {
+        //Buscar si existe en meli y despues buscar el item y meterle los ids de meli
+        return null;
+    }
 }
 
 const productService = new ProductsService();

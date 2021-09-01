@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const productsService = require('../services/products.service');
+const meliService = require('../services/meli.service');
 const keepPropertiesAfter = require('./keepPropertiesAfter');
 const { body, validationResult } = require('express-validator');
 
@@ -12,6 +13,16 @@ errorMiddleware = (req, res, next) => {
     next();
 };
 
+router.get('sync/:code', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id),code,cost')],(req, res) => {
+    console.log("Sync with meli");
+    productsService.syncWithMeli(req.params.code)
+        .then(product => {
+            console.log("Product: " + JSON.stringify(product));
+            res.send(product);
+        })
+        .catch(e => res.status(404).send());
+});
+
 router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id),code,cost')],(req, res) => {
     productsService.getAllProducts()
         .then(products => {
@@ -22,7 +33,7 @@ router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_qua
 });
 
 router.get('/full', (req, res) => {
-    productsService.getAllProducts()
+    meliService.getProducts()
         .then(products => {
             console.log("Products: " + JSON.stringify(products));
             res.send(products)

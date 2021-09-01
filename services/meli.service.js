@@ -49,6 +49,13 @@ function getItemDetails(itemIds) {
         .then(res => _.map(res.data, result => result.body));
 }
 
+function hasCode(item, code) {
+    // attributes[ select value_name where id = GTIN ]
+    // o
+    // attributes[ select value_name where id = SELLER_SKU ]
+    return false;
+}
+
 
 class MeliService {
     constructor() {
@@ -87,6 +94,10 @@ class MeliService {
                 console.log("Error => " + JSON.stringify(e));
                 throw e;
             })
+    }
+
+    findByCode(code) {
+        return this.getProducts().then(items => _.filter(items, item => hasCode(item, code)));
     }
 }
 
