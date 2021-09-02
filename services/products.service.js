@@ -5,6 +5,8 @@ const _ = require('lodash');
 
 const ProductBase = db.models.ProductBase;
 
+const findByCode = (code) => ProductBase.findOne({where: {code: code}});
+
 class ProductsService {
     constructor() {
     }
@@ -49,7 +51,7 @@ class ProductsService {
     }
 
     update(code, change) {
-        return ProductBase.findOne({where: {code: code}})
+        return findByCode(code)
             .then(product => product || Promise.reject(new Error('No product')))
             .then(product => product.update(change));
     }
@@ -59,8 +61,14 @@ class ProductsService {
     }
 
     syncWithMeli(code) {
-        //Buscar si existe en meli y despues buscar el item y meterle los ids de meli
-        return null;
+        let _meliItems;
+        return meliService.findByCode(code)
+            .then(meliItems => {
+                _meliItems = meliItems;
+                return _.map(meliItems, 'id');
+            })
+            .then(meliIds => this.update(code, {meli_ids: meliIds}))
+            .then(productBase => _.assign(productBase, {meli_items: _meliItems}));
     }
 }
 

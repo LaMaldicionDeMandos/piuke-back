@@ -50,10 +50,11 @@ function getItemDetails(itemIds) {
 }
 
 function hasCode(item, code) {
-    // attributes[ select value_name where id = GTIN ]
-    // o
-    // attributes[ select value_name where id = SELLER_SKU ]
-    return false;
+   return _.chain(item.attributes)
+       .filter(attr => attr.id === 'GTIN' || attr.id === 'SELLER_SKU')
+       .map(attr => attr.value_name)
+       .some(item_code => item_code === code)
+       .value();
 }
 
 
@@ -98,6 +99,14 @@ class MeliService {
 
     findByCode(code) {
         return this.getProducts().then(items => _.filter(items, item => hasCode(item, code)));
+    }
+
+    getItemCode(item) {
+        return _.chain(item.attributes)
+            .filter(attr => attr.id === 'GTIN' || attr.id === 'SELLER_SKU')
+            .map(attr => attr.value_name)
+            .head()
+            .value().value_name;
     }
 }
 

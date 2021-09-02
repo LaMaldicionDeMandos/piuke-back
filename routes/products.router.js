@@ -13,7 +13,7 @@ errorMiddleware = (req, res, next) => {
     next();
 };
 
-router.get('sync/:code', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id),code,cost')],(req, res) => {
+router.get('/sync/:code', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id),code,cost')],(req, res) => {
     console.log("Sync with meli");
     productsService.syncWithMeli(req.params.code)
         .then(product => {
