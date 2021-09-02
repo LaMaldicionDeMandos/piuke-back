@@ -12,11 +12,7 @@ class ProductsService {
     }
 
     newProduct(productBase) {
-        return ProductBase.create(productBase)
-            .then(r => {
-                console.log(`Product created: ${JSON.stringify(r)}`);
-                return r;
-            });
+        return ProductBase.create(productBase).then(r => this.syncWithMeli(r.code));
     }
 
     getProductBases() {
