@@ -60,6 +60,7 @@ router.post('',
     body('cost').not().isEmpty(),
     body('cost').isNumeric(),
     errorMiddleware,
+    [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id),code,cost')],
     (req, res) => {
     console.log(`Nuevo producto => ${JSON.stringify(req.body)}`);
     productsService.newProduct(req.body)
