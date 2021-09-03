@@ -94,7 +94,7 @@ class MeliService {
             .catch(e => {
                 console.log("Error => " + JSON.stringify(e));
                 throw e;
-            })
+            });
     }
 
     findByCode(code) {
