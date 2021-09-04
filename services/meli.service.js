@@ -35,6 +35,20 @@ function getCredentials() {
     return Promise.resolve(credentials);
 }
 
+function getItemQuestions(id) {
+    return getCredentials()
+        .then(credentials => credentials.credentials)
+        .then(credentials => {
+            return {
+                baseURL: MELI_BASE_URL,
+                url: `/questions/search?item=${id}&api_version=4`,
+                headers: {'Authorization': `Bearer ${credentials.access_token}`}
+            };
+        })
+        .then(config => axios.request(config))
+        .then(res => res.data);
+}
+
 function getItemDetails(itemIds) {
     return getCredentials()
         .then(credentials => credentials.credentials)
@@ -46,7 +60,16 @@ function getItemDetails(itemIds) {
             };
         })
         .then(config => axios.request(config))
-        .then(res => _.map(res.data, result => result.body));
+        .then(res => _.map(res.data, result => result.body))
+        .then(details => {
+            const promises = _.map(details, detail => {
+                return getItemQuestions(detail.id).then(questions => {
+                    detail['questions'] = questions.questions.length;
+                    return detail;
+                });
+            });
+            return Promise.all(promises);
+        });
 }
 
 function hasCode(item, code) {
@@ -56,7 +79,6 @@ function hasCode(item, code) {
        .some(item_code => item_code === code)
        .value();
 }
-
 
 class MeliService {
     constructor() {

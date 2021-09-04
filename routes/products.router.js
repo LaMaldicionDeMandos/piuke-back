@@ -23,7 +23,7 @@ router.get('/sync/:code', [keepPropertiesAfter('_id,meli_items(id,title,price,av
         .catch(e => res.status(404).send());
 });
 
-router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id,health),code,cost')],(req, res) => {
+router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id,health,questions),code,cost')],(req, res) => {
     productsService.getAllProducts()
         .then(products => {
             console.log("Products: " + JSON.stringify(products));
