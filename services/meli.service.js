@@ -46,7 +46,21 @@ function getItemQuestions(id) {
             };
         })
         .then(config => axios.request(config))
-        .then(res => res.data);
+        .then(res => res.data.questions);
+}
+
+function getItemVisits(id) {
+    return getCredentials()
+        .then(credentials => credentials.credentials)
+        .then(credentials => {
+            return {
+                baseURL: MELI_BASE_URL,
+                url: `/visits/items?ids=${id}`,
+                headers: {'Authorization': `Bearer ${credentials.access_token}`}
+            };
+        })
+        .then(config => axios.request(config))
+        .then(res => res.data[id]);
 }
 
 function getItemDetails(itemIds) {
@@ -63,10 +77,14 @@ function getItemDetails(itemIds) {
         .then(res => _.map(res.data, result => result.body))
         .then(details => {
             const promises = _.map(details, detail => {
-                return getItemQuestions(detail.id).then(questions => {
-                    detail['questions'] = questions.questions.length;
-                    return detail;
-                });
+                const questionsPromise = getItemQuestions(detail.id);
+                const visitsPromise = getItemVisits(detail.id);
+                return Promise.all([questionsPromise, visitsPromise])
+                    .then(r => {
+                        detail['questions'] = r[0].length;
+                        detail['visits'] = r[1];
+                        return detail;
+                    })
             });
             return Promise.all(promises);
         });
