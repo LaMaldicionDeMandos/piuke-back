@@ -7,6 +7,7 @@ const cors = require('cors');
 
 const healthRouter = require('./routes/health.router');
 const productsRouter = require('./routes/products.router');
+const salesRouter = require('./routes/sales.router');
 const meliRouter = require('./routes/meli.router');
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 app.use('/health', healthRouter);
 app.use('/products', productsRouter);
+app.use('/sales', salesRouter);
 app.use('/meli', meliRouter);
 
 module.exports = app;

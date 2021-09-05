@@ -148,6 +148,25 @@ class MeliService {
             .head()
             .value().value_name;
     }
+
+    findSales() {
+        return getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/orders/search?seller=${MELI_SELLER_ID}&order.status=paid`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data.results)
+            .then(sales => _.filter(sales, sale => _.some(sale.order_items, item => item.item.seller_sku !== null)))
+            .catch(e => {
+                console.log("Error => " + JSON.stringify(e));
+                throw e;
+            });
+    }
 }
 
 const meliService = new MeliService();

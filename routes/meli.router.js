@@ -7,4 +7,11 @@ router.get('/listeners/auth', function(req, res, next) {
     res.send('ok');
 });
 
+router.get('/sales', function(req, res, next) {
+    console.log(req.path);
+    service.findSales()
+        .then(sales => res.send(sales))
+        .catch(e => res.sendStatus(400));
+});
+
 module.exports = router;

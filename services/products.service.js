@@ -19,6 +19,22 @@ class ProductsService {
         return ProductBase.findAll().catch(e => console.log(JSON.stringify(e)));
     }
 
+    getProductByCode(code) {
+        return findByCode(code)
+            .then(productBase => {
+                meliService.getProductsByIds(productBase.meli_ids)
+                    .then(meliItems => {
+                        let result = productBase.toJSON();
+                        result['meli_items'] = [];
+                        _.each(result.meli_ids, (id) => {
+                            const detail = _.find(items, {id: id});
+                            if (detail) result.meli_items.push(detail);
+                        });
+                        return result;
+                    });
+            });
+    }
+
     getAllProducts() {
         return this.getProductBases()
             .then(productBases => {
