@@ -7,6 +7,32 @@ const ProductBase = db.models.ProductBase;
 
 const findByCode = (code) => ProductBase.findOne({where: {code: code}});
 
+const addProduct = (order) => {
+    return findByCode(order.item.seller_sku)
+        .then(p => p.toJSON())
+        .then(p => {
+            order.item = _.assign(order.item, {code: p.code, cost: p.cost});
+            return order;
+        });
+}
+
+const getOrders = (sale ) => {
+   return _.map(sale.order_items, addProduct);
+};
+
+const mapSale = (sale) => {
+    const ordersPromises = getOrders(sale);
+    return Promise.all(ordersPromises)
+        .then(orders => {
+            sale.order_items = orders;
+            return sale;
+        });
+}
+
+const mapSales = (sales) => {
+    return _.map(sales, mapSale);
+};
+
 class SalesService {
     constructor() {
     }
@@ -14,15 +40,10 @@ class SalesService {
     getSales() {
         return meliService.findSales()
             .then(sales => {
-                _.forEach(sales, sale => {
-                   const order =  _.head(sale.order_items);
-                   const code = order.item.seller_sku;
-                   const meliId = order.item.id;
-                   sale['product_code'] = code;
-                   sale['meli_id'] = meliId;
-                });
-                return sales;
+               const salesPromises = mapSales(sales);
+               return Promise.all(salesPromises);
             });
+
     }
 }
 

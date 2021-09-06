@@ -161,7 +161,7 @@ class MeliService {
             })
             .then(config => axios.request(config))
             .then(res => res.data.results)
-            .then(sales => _.filter(sales, sale => _.some(sale.order_items, item => item.item.seller_sku !== null)))
+            .then(orders => _.filter(orders, order => _.some(order.order_items, item => item.item.seller_sku !== null)))
             .catch(e => {
                 console.log("Error => " + JSON.stringify(e));
                 throw e;
