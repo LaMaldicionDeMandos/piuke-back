@@ -8,10 +8,13 @@ const ProductBase = db.models.ProductBase;
 const findByCode = (code) => ProductBase.findOne({where: {code: code}});
 
 const addProduct = (order) => {
-    return findByCode(order.item.seller_sku)
-        .then(p => p.toJSON())
-        .then(p => {
-            order.item = _.assign(order.item, {code: p.code, cost: p.cost});
+    const basePromise = findByCode(order.item.seller_sku).then(p => p.toJSON());
+    const meliItemPromise = meliService.getProductsById(order.item.id);
+    return Promise.all([basePromise, meliItemPromise])
+        .then(results => {
+            const base = _.head(results);
+            const meliItem = _.last(results);
+            order.item = _.assign(order.item, {code: base.code, cost: base.cost, meli_item: meliItem});
             return order;
         });
 }

@@ -109,6 +109,10 @@ class MeliService {
         return Promise.all(promises).then(_.flatten);
     }
 
+    getProductsById(id) {
+        return getItemDetails([id]);
+    }
+
     getProducts(offset = 0) {
         return getCredentials()
             .then(credentials => credentials.credentials)
