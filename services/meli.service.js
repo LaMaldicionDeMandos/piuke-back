@@ -98,6 +98,25 @@ function hasCode(item, code) {
        .value();
 }
 
+function searchSales(query = '') {
+    return getCredentials()
+        .then(credentials => credentials.credentials)
+        .then(credentials => {
+            return {
+                baseURL: MELI_BASE_URL,
+                url: `/orders/search?seller=${MELI_SELLER_ID}&order.status=paid${query}`,
+                headers: {'Authorization': `Bearer ${credentials.access_token}`}
+            };
+        })
+        .then(config => axios.request(config))
+        .then(res => res.data.results)
+        .then(orders => _.filter(orders, order => _.some(order.order_items, item => item.item.seller_sku !== null)))
+        .catch(e => {
+            console.log("Error => " + JSON.stringify(e));
+            throw e;
+        });
+}
+
 class MeliService {
     constructor() {
         getCredentials();
@@ -153,23 +172,19 @@ class MeliService {
             .value().value_name;
     }
 
+    findSalesFromMonth(year, month) {
+        const m = month < 10 ? '0' + month : month;
+        const nextYear = month === 12 ? year + 1 : year;
+        const nextMonth = month === 12 ? '01' : (month < 9 ? `0${month+1}` : month + 1);
+        return searchSales(`&order.date_created.from=${year}-${m}-01T00:00:00.000-03:00&orfer.date_created.to=${nextYear}-${nextMonth}-01T00:00:00.000-03:00`);
+    }
+
+    findSalesFromYear(year) {
+        return searchSales(`&order.date_created.from=${year}-01-01T00:00:00.000-03:00&orfer.date_created.to=${year+1}-01-01T00:00:00.000-03:00`);
+    }
+
     findSales() {
-        return getCredentials()
-            .then(credentials => credentials.credentials)
-            .then(credentials => {
-                return {
-                    baseURL: MELI_BASE_URL,
-                    url: `/orders/search?seller=${MELI_SELLER_ID}&order.status=paid`,
-                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
-                };
-            })
-            .then(config => axios.request(config))
-            .then(res => res.data.results)
-            .then(orders => _.filter(orders, order => _.some(order.order_items, item => item.item.seller_sku !== null)))
-            .catch(e => {
-                console.log("Error => " + JSON.stringify(e));
-                throw e;
-            });
+        return searchSales('');
     }
 }
 

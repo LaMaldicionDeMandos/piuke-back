@@ -40,8 +40,11 @@ class SalesService {
     constructor() {
     }
 
-    getSales() {
-        return meliService.findSales()
+    getSales(year = undefined, month = undefined) {
+        const service = year
+            ? (month ? meliService.findSalesFromMonth : meliService.findSalesFromYear)
+            : meliService.findSales;
+        return service(Number.parseInt(year, 10), Number.parseInt(month, 10))
             .then(sales => {
                const salesPromises = mapSales(sales);
                return Promise.all(salesPromises);
