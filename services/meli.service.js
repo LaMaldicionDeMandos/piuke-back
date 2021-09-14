@@ -176,7 +176,7 @@ class MeliService {
         const m = month < 10 ? '0' + month : month;
         const nextYear = month === 12 ? year + 1 : year;
         const nextMonth = month === 12 ? '01' : (month < 9 ? `0${month+1}` : month + 1);
-        return searchSales(`&order.date_created.from=${year}-${m}-01T00:00:00.000-03:00&orfer.date_created.to=${nextYear}-${nextMonth}-01T00:00:00.000-03:00`);
+        return searchSales(`&order.date_created.from=${year}-${m}-01T00:00:00.000-03:00&order.date_created.to=${nextYear}-${nextMonth}-01T00:00:00.000-03:00`);
     }
 
     findSalesFromYear(year) {
