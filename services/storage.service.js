@@ -27,12 +27,19 @@ sequelize.define('ProductBase', {
     }
 });
 
+sequelize.define('Expense', {
+    _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
+    desc: {type: DataTypes.STRING, allowNull: true, defaultValue: ''},
+    value: {type: DataTypes.FLOAT , allowNull: false}
+});
+
 (async () => {
     console.log("Ejecucion asyncrona");
     try {
         await sequelize.authenticate();
         console.log('Authenticated');
         await sequelize.models.ProductBase.sync({alter: true});
+        await sequelize.models.Expense.sync({alter: true});
         console.log('Synchronized');
     } catch (e) {
         console.log("Error " + JSON.stringify(e));
