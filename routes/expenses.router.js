@@ -11,8 +11,14 @@ errorMiddleware = (req, res, next) => {
     next();
 };
 
-router.get('', (req, res) => {
-    expensesService.getExpenses()
+router.get('/:year', (req, res) => {
+    expensesService.getExpenses(req.params.year)
+        .then(expenses => res.send(expenses))
+        .catch(e => res.sendStatus(400));
+});
+
+router.get('/:year/:month', (req, res) => {
+    expensesService.getExpenses(req.params.year, req.params.month)
         .then(expenses => res.send(expenses))
         .catch(e => res.sendStatus(400));
 });
