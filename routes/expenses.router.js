@@ -23,6 +23,18 @@ router.get('/:year/:month', (req, res) => {
         .catch(e => res.sendStatus(400));
 });
 
+router.get('/:year/summary', (req, res) => {
+    expensesService.getExpensesSummary(req.params.year)
+        .then(expenses => res.send({summary: expenses}))
+        .catch(e => res.sendStatus(400));
+});
+
+router.get('/:year/:month/summary', (req, res) => {
+    expensesService.getExpensesSummary(req.params.year, req.params.month)
+        .then(expenses => res.send({summary: expenses}))
+        .catch(e => res.sendStatus(400));
+});
+
 router.post('',
     body('value').not().isEmpty(),
     body('value').isNumeric(),

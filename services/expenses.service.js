@@ -33,6 +33,13 @@ class ExpenseService {
         const dateRange = getDateRange(year, month);
         return getExpensesFromRange(dateRange);
     }
+
+    getExpensesSummary(year = undefined, month = undefined) {
+        if (!year && !month) return getAllExpenses();
+        const dateRange = getDateRange(year, month);
+        return getExpensesFromRange(dateRange)
+            .then(expenses => _.reduce(expenses, (sum, exp) => sum + exp.value, 0));
+    }
 }
 
 const expensesService = new ExpenseService();
