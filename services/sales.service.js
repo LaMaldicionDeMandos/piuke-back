@@ -36,6 +36,11 @@ const mapSales = (sales) => {
     return _.map(sales, mapSale);
 };
 
+const calculateProfit = (sale) => {
+    const payment = _.head(sale.payments);
+    return _.reduce(sale.order_items, (sum, order) => sum + 1, 0);
+};
+
 class SalesService {
     constructor() {
     }
@@ -49,6 +54,12 @@ class SalesService {
                const salesPromises = mapSales(sales);
                return Promise.all(salesPromises);
             });
+
+    }
+
+    getSummary(year = undefined, month = undefined) {
+        return this.getSales(year, month)
+            .then(sales => _.chain(sales).map(calculateSaleProfit).reduce((sum, profit) => sum + profit, 0).value());
 
     }
 }
