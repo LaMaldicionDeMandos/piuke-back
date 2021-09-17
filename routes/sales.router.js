@@ -14,8 +14,9 @@ router.get('/', KEEP_PROPERTIES, (req, res) => {
         .catch(e => res.status(400).send());
     });
 
-router.get('/summary', KEEP_PROPERTIES, (req, res) => {
-    res.send({summary: 0});
+router.get('/summary', (req, res) => {
+    salesService.getSummary()
+        .then(summary => res.send({summary: summary}));
 });
 
 router.get('/:year', KEEP_PROPERTIES, (req, res) => {
@@ -27,8 +28,9 @@ router.get('/:year', KEEP_PROPERTIES, (req, res) => {
         .catch(e => res.status(400).send());
 });
 
-router.get('/:year/summary', KEEP_PROPERTIES, (req, res) => {
-    res.send({summary: 0});
+router.get('/:year/summary', (req, res) => {
+    salesService.getSummary(req.params.year)
+        .then(summary => res.send({summary: summary}));
 });
 
 router.get('/:year/:month', KEEP_PROPERTIES, (req, res) => {
@@ -40,8 +42,9 @@ router.get('/:year/:month', KEEP_PROPERTIES, (req, res) => {
         .catch(e => res.status(400).send());
 });
 
-router.get('/:year/:month/summary', KEEP_PROPERTIES, (req, res) => {
-    res.send({summary: 0});
+router.get('/:year/:month/summary', (req, res) => {
+    salesService.getSummary(req.params.year, req.params.month)
+        .then(summary => res.send({summary: summary}));
 });
 
 module.exports = router;

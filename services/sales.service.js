@@ -36,9 +36,18 @@ const mapSales = (sales) => {
     return _.map(sales, mapSale);
 };
 
+const calculateOrderProfit = (order, payment) => {
+    const price = order.full_unit_price;
+    const shippingFee = payment.shipping_cost;
+    const totalPaid = payment.total_paid_amount;
+    const transaction = payment.transaction_amount;
+    const fees = order.sale_fee + shippingFee - (totalPaid - transaction);
+    return price - fees - order.item.cost;
+}
+
 const calculateProfit = (sale) => {
     const payment = _.head(sale.payments);
-    return _.reduce(sale.order_items, (sum, order) => sum + 1, 0);
+    return _.reduce(sale.order_items, (sum, order) => sum + calculateOrderProfit(order, payment), 0);
 };
 
 class SalesService {
@@ -59,7 +68,7 @@ class SalesService {
 
     getSummary(year = undefined, month = undefined) {
         return this.getSales(year, month)
-            .then(sales => _.chain(sales).map(calculateSaleProfit).reduce((sum, profit) => sum + profit, 0).value());
+            .then(sales => _.chain(sales).map(calculateProfit).reduce((sum, profit) => sum + profit, 0).value());
 
     }
 }
