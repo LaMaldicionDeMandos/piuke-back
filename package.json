@@ -19,6 +19,7 @@
     "morgan": "~1.9.1",
     "mysql2": "^2.3.0",
     "sequelize": "^6.6.5",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^4.2.0",
+    "ttl-mem-cache": "^4.1.0"
   }
 }

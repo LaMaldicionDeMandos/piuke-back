@@ -1,7 +1,11 @@
 const db = require('./storage.service');
 const meliService = require('./meli.service');
+const Cache = require('ttl-mem-cache');
 
 const _ = require('lodash');
+
+const cache = new Cache();
+const CACHE_TTL = 1000*60*5;
 
 const ProductBase = db.models.ProductBase;
 
@@ -50,6 +54,28 @@ const calculateProfit = (sale) => {
     return _.reduce(sale.order_items, (sum, order) => sum + calculateOrderProfit(order, payment), 0);
 };
 
+const calculatePerformance = (items) => {
+  return _.reduce(items, (result, item) => {
+      result.count++;
+      result.profit+= calculateOrderProfit(item.order, item.payment);
+      return result;
+  }, {count: 0, profit: 0});
+};
+
+const salesToPerformances = (sales) => {
+    return _.chain(sales).map((sale) => _.map(sale.order_items, (order) => {
+        return {payment: _.head(sale.payments), order: order};
+    })).flatten()
+        .groupBy(item => item.order.item.code)
+        .transform((list, value, key) => {
+            const item = _.head(value).order.item;
+            let product = {code: key, title: item.title, image: _.head(item.meli_item).thumbnail};
+            product = _.assign(product, calculatePerformance(value));
+            list.push(product);
+            return list;
+        }, []).value();
+}
+
 class SalesService {
     constructor() {
     }
@@ -62,14 +88,27 @@ class SalesService {
             .then(sales => {
                const salesPromises = mapSales(sales);
                return Promise.all(salesPromises);
+            })
+            .then(sales => {
+                cache.set(`${year}-${month}-sales`, sales, CACHE_TTL);
+                return sales;
             });
+    }
 
+    getCachedSales(year = undefined, month = undefined) {
+        const sales = cache.get(`${year}-${month}-sales`);
+        if (!sales) return this.getSales(year, month);
+        return Promise.resolve(sales);
     }
 
     getSummary(year = undefined, month = undefined) {
-        return this.getSales(year, month)
+        return this.getCachedSales(year, month)
             .then(sales => _.chain(sales).map(calculateProfit).reduce((sum, profit) => sum + profit, 0).value());
 
+    }
+
+    getPerformances(year = undefined, month = undefined) {
+        return this.getCachedSales(year, month).then(salesToPerformances);
     }
 }
 

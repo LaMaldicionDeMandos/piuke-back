@@ -19,6 +19,11 @@ router.get('/summary', (req, res) => {
         .then(summary => res.send({summary: summary}));
 });
 
+router.get('/performance', (req, res) => {
+    salesService.getPerformances()
+        .then(performances => res.send(performances));
+});
+
 router.get('/:year', KEEP_PROPERTIES, (req, res) => {
     salesService.getSales(req.params.year)
         .then(sales => {
@@ -33,6 +38,11 @@ router.get('/:year/summary', (req, res) => {
         .then(summary => res.send({summary: summary}));
 });
 
+router.get('/:year/performance', (req, res) => {
+    salesService.getPerformances(req.params.year)
+        .then(performances => res.send(performances));
+});
+
 router.get('/:year/:month', KEEP_PROPERTIES, (req, res) => {
     salesService.getSales(req.params.year, req.params.month)
         .then(sales => {
@@ -45,6 +55,12 @@ router.get('/:year/:month', KEEP_PROPERTIES, (req, res) => {
 router.get('/:year/:month/summary', (req, res) => {
     salesService.getSummary(req.params.year, req.params.month)
         .then(summary => res.send({summary: summary}));
+});
+
+router.get('/:year/:month/performance', (req, res) => {
+    salesService.getPerformances(req.params.year, req.params.month)
+        .then(performances => res.send(performances))
+        .catch(e => res.sendStatus(500));
 });
 
 module.exports = router;
