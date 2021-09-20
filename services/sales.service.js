@@ -55,11 +55,7 @@ const calculateProfit = (sale) => {
 };
 
 const calculatePerformance = (items) => {
-  return _.reduce(items, (result, item) => {
-      result.count++;
-      result.profit+= calculateOrderProfit(item.order, item.payment);
-      return result;
-  }, {count: 0, profit: 0});
+  return _.map(items, (item) => calculateOrderProfit(item.order, item.payment));
 };
 
 const salesToPerformances = (sales) => {
@@ -69,8 +65,12 @@ const salesToPerformances = (sales) => {
         .groupBy(item => item.order.item.code)
         .transform((list, value, key) => {
             const item = _.head(value).order.item;
-            let product = {code: key, title: item.title, image: _.head(item.meli_item).thumbnail};
-            product = _.assign(product, calculatePerformance(value));
+            let product = {
+                code: key,
+                title: item.title,
+                image: _.head(item.meli_item).thumbnail,
+                profits: calculatePerformance(value)
+            };
             list.push(product);
             return list;
         }, []).value();
