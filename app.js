@@ -10,6 +10,7 @@ const productsRouter = require('./routes/products.router');
 const salesRouter = require('./routes/sales.router');
 const meliRouter = require('./routes/meli.router');
 const expensesRouter = require('./routes/expenses.router');
+const bestSellersRouter = require('./routes/best_sellers.router');
 
 const app = express();
 
@@ -26,5 +27,6 @@ app.use('/products', productsRouter);
 app.use('/sales', salesRouter);
 app.use('/meli', meliRouter);
 app.use('/expenses', expensesRouter);
+app.use('/bestsellers', bestSellersRouter);
 
 module.exports = app;

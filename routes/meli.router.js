@@ -14,4 +14,10 @@ router.get('/sales', function(req, res, next) {
         .catch(e => res.sendStatus(400));
 });
 
+router.get('/categories', function(req, res, next) {
+    service.categories()
+        .then(categories => res.send(categories))
+        .catch(e => res.sendStatus(400));
+});
+
 module.exports = router;

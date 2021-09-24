@@ -1,5 +1,7 @@
 const axios = require('axios').default;
 const _ = require('lodash');
+
+const MELI_ROOT_CATEGORY = 'MLA1132';
 const MELI_BASE_URL = 'https://api.mercadolibre.com';
 const MELI_CREDENTIALS = {
     grant_type: 'client_credentials',
@@ -185,6 +187,52 @@ class MeliService {
 
     findSales() {
         return searchSales('');
+    }
+
+    bestSellers(category) {
+        return getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/highlights/MLA/category/${category || MELI_ROOT_CATEGORY}`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data)
+            .then(data => {
+                const ids = _.map(data.content, 'id');
+                return getItemDetails(ids)
+                    .then(items => {
+                        _.each(items, item => {
+                            _.assignIn(item, {position: _.find(data.content, c => c.id === item.id).position});
+                        });
+                        return items;
+                    })
+            })
+            .catch(e => {
+                console.log("Error => " + JSON.stringify(e));
+                throw e;
+            });
+    }
+
+    categories() {
+        return getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/categories/${MELI_ROOT_CATEGORY}`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data.children_categories)
+            .catch(e => {
+                console.log("Error => " + JSON.stringify(e));
+                throw e;
+            });
     }
 }
 
