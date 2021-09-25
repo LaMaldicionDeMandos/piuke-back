@@ -3,7 +3,7 @@ const bestSellersService = require('../services/best.sellers.service');
 const keepPropertiesAfter = require('./keepPropertiesAfter');
 const router = express.Router();
 
-router.get('/', [keepPropertiesAfter('id,title,seller_id,category_id,sold_quantity,price,start_time,permalink,thumbnail')], (req, res) => {
+router.get('/', [keepPropertiesAfter('id,title,seller_id,category_id,sold_quantity,price,start_time,permalink,thumbnail,position')], (req, res) => {
     bestSellersService.bestSellers()
         .then(bestSellers => {
             console.log("Best Sellers: " + JSON.stringify(bestSellers));
