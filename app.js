@@ -11,6 +11,7 @@ const salesRouter = require('./routes/sales.router');
 const meliRouter = require('./routes/meli.router');
 const expensesRouter = require('./routes/expenses.router');
 const bestSellersRouter = require('./routes/best_sellers.router');
+const whatsappRouter = require('./routes/whatsapp.router');
 
 const app = express();
 
@@ -28,5 +29,6 @@ app.use('/sales', salesRouter);
 app.use('/meli', meliRouter);
 app.use('/expenses', expensesRouter);
 app.use('/bestsellers', bestSellersRouter);
+app.use('/whatsapp', whatsappRouter);
 
 module.exports = app;
