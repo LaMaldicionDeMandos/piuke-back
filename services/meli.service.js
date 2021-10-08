@@ -163,7 +163,7 @@ class MeliService {
     }
 
     findByCode(code) {
-        return this.getProducts().then(items => _.filter(items, item => hasCode(item, code)));
+        return this.getProducts().then(items => _.filter(items, item => hasCode(item, code) || item.title === code));
     }
 
     getItemCode(item) {
