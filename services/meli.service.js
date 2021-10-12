@@ -25,103 +25,9 @@ class Credentials {
     }
 }
 
-function getCredentials() {
-    if (!credentials || credentials.isExpired()) {
-        return axios.post(MELI_BASE_URL + '/oauth/token', MELI_CREDENTIALS)
-            .then((response) => {
-                credentials = new Credentials(response.data);
-                console.log('Credentials: ' + JSON.stringify(credentials));
-                return credentials;
-            });
-    }
-    return Promise.resolve(credentials);
-}
-
-function getItemQuestions(id) {
-    return getCredentials()
-        .then(credentials => credentials.credentials)
-        .then(credentials => {
-            return {
-                baseURL: MELI_BASE_URL,
-                url: `/questions/search?item=${id}&api_version=4`,
-                headers: {'Authorization': `Bearer ${credentials.access_token}`}
-            };
-        })
-        .then(config => axios.request(config))
-        .then(res => res.data.questions);
-}
-
-function getItemVisits(id) {
-    return getCredentials()
-        .then(credentials => credentials.credentials)
-        .then(credentials => {
-            return {
-                baseURL: MELI_BASE_URL,
-                url: `/visits/items?ids=${id}`,
-                headers: {'Authorization': `Bearer ${credentials.access_token}`}
-            };
-        })
-        .then(config => axios.request(config))
-        .then(res => res.data[id]);
-}
-
-function getItemDetails(itemIds) {
-    return getCredentials()
-        .then(credentials => credentials.credentials)
-        .then(credentials => {
-            return {
-                baseURL: MELI_BASE_URL,
-                url: `/items?ids=${_.join(itemIds)}`,
-                headers: {'Authorization': `Bearer ${credentials.access_token}`}
-            };
-        })
-        .then(config => axios.request(config))
-        .then(res => _.map(res.data, result => result.body))
-        .then(details => {
-            const promises = _.map(details, detail => {
-                const questionsPromise = getItemQuestions(detail.id);
-                const visitsPromise = getItemVisits(detail.id);
-                return Promise.all([questionsPromise, visitsPromise])
-                    .then(r => {
-                        detail['questions'] = r[0].length;
-                        detail['visits'] = r[1];
-                        return detail;
-                    })
-            });
-            return Promise.all(promises);
-        });
-}
-
-function hasCode(item, code) {
-   return _.chain(item.attributes)
-       .filter(attr => attr.id === 'GTIN' || attr.id === 'SELLER_SKU')
-       .map(attr => attr.value_name)
-       .some(item_code => item_code === code)
-       .value();
-}
-
-function searchSales(query = '') {
-    return getCredentials()
-        .then(credentials => credentials.credentials)
-        .then(credentials => {
-            return {
-                baseURL: MELI_BASE_URL,
-                url: `/orders/search?seller=${MELI_SELLER_ID}&order.status=paid${query}`,
-                headers: {'Authorization': `Bearer ${credentials.access_token}`}
-            };
-        })
-        .then(config => axios.request(config))
-        .then(res => res.data.results)
-        .then(orders => _.filter(orders, order => _.some(order.order_items, item => item.item.seller_sku !== null)))
-        .catch(e => {
-            console.log("Error => " + JSON.stringify(e));
-            throw e;
-        });
-}
-
 class MeliService {
     constructor() {
-        getCredentials();
+        this.#getCredentials();
     }
 
     getProductsByIds(ids) {
@@ -131,11 +37,11 @@ class MeliService {
     }
 
     getProductsById(id) {
-        return getItemDetails([id]);
+        return this.#getItemDetails([id]);
     }
 
     getProducts(offset = 0) {
-        return getCredentials()
+        return this.#getCredentials()
             .then(credentials => credentials.credentials)
             .then(credentials => {
                 return {
@@ -147,7 +53,7 @@ class MeliService {
             .then(config => axios.request(config))
             .then(res => res.data)
             .then(data => {
-                return getItemDetails(data.results)
+                return this.#getItemDetails(data.results)
                     .then(items => {
                         if (data.paging.offset + data.paging.limit < data.paging.total) {
                             return this.getProducts(offset + REQUEST_LIMIT)
@@ -163,7 +69,7 @@ class MeliService {
     }
 
     findByCode(code) {
-        return this.getProducts().then(items => _.filter(items, item => hasCode(item, code) || item.title === code));
+        return this.getProducts().then(items => _.filter(items, item => this.#hasCode(item, code) || item.title === code));
     }
 
     getItemCode(item) {
@@ -178,19 +84,19 @@ class MeliService {
         const m = month < 10 ? '0' + month : month;
         const nextYear = month === 12 ? year + 1 : year;
         const nextMonth = month === 12 ? '01' : (month < 9 ? `0${month+1}` : month + 1);
-        return searchSales(`&order.date_created.from=${year}-${m}-01T00:00:00.000-03:00&order.date_created.to=${nextYear}-${nextMonth}-01T00:00:00.000-03:00`);
+        return this.#searchSales(`&order.date_created.from=${year}-${m}-01T00:00:00.000-03:00&order.date_created.to=${nextYear}-${nextMonth}-01T00:00:00.000-03:00`);
     }
 
     findSalesFromYear(year) {
-        return searchSales(`&order.date_created.from=${year}-01-01T00:00:00.000-03:00&orfer.date_created.to=${year+1}-01-01T00:00:00.000-03:00`);
+        return this.#searchSales(`&order.date_created.from=${year}-01-01T00:00:00.000-03:00&orfer.date_created.to=${year+1}-01-01T00:00:00.000-03:00`);
     }
 
     findSales() {
-        return searchSales('');
+        return this.#searchSales('');
     }
 
     bestSellers(category) {
-        return getCredentials()
+        return this.#getCredentials()
             .then(credentials => credentials.credentials)
             .then(credentials => {
                 return {
@@ -203,7 +109,7 @@ class MeliService {
             .then(res => res.data)
             .then(data => {
                 const ids = _.map(data.content, 'id');
-                return getItemDetails(ids)
+                return this.#getItemDetails(ids)
                     .then(items => {
                         _.each(items, item => {
                             _.assignIn(item, {position: _.find(data.content, c => c.id === item.id).position});
@@ -218,7 +124,7 @@ class MeliService {
     }
 
     categories() {
-        return getCredentials()
+        return this.#getCredentials()
             .then(credentials => credentials.credentials)
             .then(credentials => {
                 return {
@@ -229,6 +135,101 @@ class MeliService {
             })
             .then(config => axios.request(config))
             .then(res => res.data.children_categories)
+            .catch(e => {
+                console.log("Error => " + JSON.stringify(e));
+                throw e;
+            });
+    }
+
+    // Private methods
+     #getCredentials() {
+        if (!credentials || credentials.isExpired()) {
+            return axios.post(MELI_BASE_URL + '/oauth/token', MELI_CREDENTIALS)
+                .then((response) => {
+                    credentials = new Credentials(response.data);
+                    console.log('Credentials: ' + JSON.stringify(credentials));
+                    return credentials;
+                });
+        }
+        return Promise.resolve(credentials);
+    }
+
+    #getItemQuestions(id) {
+        return this.#getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/questions/search?item=${id}&api_version=4`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data.questions);
+    }
+
+    #getItemVisits(id) {
+        return this.#getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/visits/items?ids=${id}`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data[id]);
+    }
+
+    #getItemDetails(itemIds) {
+        return this.#getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/items?ids=${_.join(itemIds)}`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => _.map(res.data, result => result.body))
+            .then(details => {
+                const promises = _.map(details, detail => {
+                    const questionsPromise = this.#getItemQuestions(detail.id);
+                    const visitsPromise = this.#getItemVisits(detail.id);
+                    return Promise.all([questionsPromise, visitsPromise])
+                        .then(r => {
+                            detail['questions'] = r[0].length;
+                            detail['visits'] = r[1];
+                            return detail;
+                        })
+                });
+                return Promise.all(promises);
+            });
+    }
+
+    #hasCode(item, code) {
+        return _.chain(item.attributes)
+            .filter(attr => attr.id === 'GTIN' || attr.id === 'SELLER_SKU')
+            .map(attr => attr.value_name)
+            .some(item_code => item_code === code)
+            .value();
+    }
+
+    #searchSales(query = '') {
+        return this.#getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/orders/search?seller=${MELI_SELLER_ID}&order.status=paid${query}`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data.results)
+            .then(orders => _.filter(orders, order => _.some(order.order_items, item => item.item.seller_sku !== null)))
             .catch(e => {
                 console.log("Error => " + JSON.stringify(e));
                 throw e;

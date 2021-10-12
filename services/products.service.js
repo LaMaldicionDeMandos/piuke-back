@@ -5,8 +5,6 @@ const _ = require('lodash');
 
 const ProductBase = db.models.ProductBase;
 
-const findByCode = (code) => ProductBase.findOne({where: {code: code}});
-
 class ProductsService {
     constructor() {
     }
@@ -20,7 +18,7 @@ class ProductsService {
     }
 
     getProductByCode(code) {
-        return findByCode(code)
+        return this.#findByCode(code)
             .then(productBase => {
                 meliService.getProductsByIds(productBase.meli_ids)
                     .then(meliItems => {
@@ -63,7 +61,7 @@ class ProductsService {
     }
 
     update(code, change) {
-        return findByCode(code)
+        return this.#findByCode(code)
             .then(product => product || Promise.reject(new Error('No product')))
             .then(product => product.update(change));
     }
@@ -82,6 +80,9 @@ class ProductsService {
             .then(meliIds => this.update(code, {meli_ids: meliIds}))
             .then(productBase => _.assign(productBase, {meli_items: _meliItems}));
     }
+
+    // Private methods
+    #findByCode = (code) => ProductBase.findOne({where: {code: code}});
 }
 
 const productService = new ProductsService();
