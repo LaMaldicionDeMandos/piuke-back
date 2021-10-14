@@ -80,18 +80,18 @@ class MeliService {
             .value().value_name;
     }
 
-    findSalesFromMonth(year, month) {
+    findSalesFromMonth = (year, month) => {
         const m = month < 10 ? '0' + month : month;
         const nextYear = month === 12 ? year + 1 : year;
         const nextMonth = month === 12 ? '01' : (month < 9 ? `0${month+1}` : month + 1);
         return this.#searchSales(`&order.date_created.from=${year}-${m}-01T00:00:00.000-03:00&order.date_created.to=${nextYear}-${nextMonth}-01T00:00:00.000-03:00`);
     }
 
-    findSalesFromYear(year) {
+    findSalesFromYear = (year) => {
         return this.#searchSales(`&order.date_created.from=${year}-01-01T00:00:00.000-03:00&orfer.date_created.to=${year+1}-01-01T00:00:00.000-03:00`);
     }
 
-    findSales() {
+    findSales = () => {
         return this.#searchSales('');
     }
 
