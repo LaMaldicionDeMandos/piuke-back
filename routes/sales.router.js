@@ -14,14 +14,14 @@ router.get('/', KEEP_PROPERTIES, (req, res) => {
         .catch(e => res.status(400).send());
     });
 
-router.get('/summary', (req, res) => {
-    salesService.getSummary()
-        .then(summary => res.send({summary: summary}));
+router.get('/summary', async (req, res) => {
+    const symmary = await salesService.getSummary();
+    res.send({summary: summary});
 });
 
-router.get('/performance', (req, res) => {
-    salesService.getPerformances()
-        .then(performances => res.send(performances));
+router.get('/performance', async (req, res) => {
+    const performances = await salesService.getPerformances();
+    res.send(performances);
 });
 
 router.get('/:year', KEEP_PROPERTIES, (req, res) => {
@@ -33,14 +33,14 @@ router.get('/:year', KEEP_PROPERTIES, (req, res) => {
         .catch(e => res.status(400).send());
 });
 
-router.get('/:year/summary', (req, res) => {
-    salesService.getSummary(req.params.year)
-        .then(summary => res.send({summary: summary}));
+router.get('/:year/summary', async (req, res) => {
+    const summary = await salesService.getSummary(req.params.year);
+    res.send({summary: summary});
 });
 
-router.get('/:year/performance', (req, res) => {
-    salesService.getPerformances(req.params.year)
-        .then(performances => res.send(performances));
+router.get('/:year/performance', async (req, res) => {
+    const performances = await salesService.getPerformances(req.params.year);
+    res.send(performances);
 });
 
 router.get('/:year/:month', KEEP_PROPERTIES, (req, res) => {
@@ -52,9 +52,9 @@ router.get('/:year/:month', KEEP_PROPERTIES, (req, res) => {
         .catch(e => res.status(400).send());
 });
 
-router.get('/:year/:month/summary', (req, res) => {
-    salesService.getSummary(req.params.year, req.params.month)
-        .then(summary => res.send({summary: summary}));
+router.get('/:year/:month/summary', async (req, res) => {
+    const summary = salesService.getSummary(req.params.year, req.params.month);
+    res.send({summary: summary});
 });
 
 router.get('/:year/:month/performance', (req, res) => {

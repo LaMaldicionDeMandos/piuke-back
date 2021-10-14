@@ -14,6 +14,28 @@ sequelize.define('ProductBase', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
     code: {type: DataTypes.STRING, allowNull: false},
     cost: {type: DataTypes.FLOAT , allowNull: false},
+    last_product_comparations: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: '[]',
+        set(comparations) {
+            this.setDataValue('last_product_comparations',JSON.stringify(comparations));
+        },
+        get() {
+            return JSON.parse(this.getDataValue('last_product_comparations'));
+        }
+    },
+    current_product_comparations: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: '[]',
+        set(comparations) {
+            this.setDataValue('current_product_comparations',JSON.stringify(comparations));
+        },
+        get() {
+            return JSON.parse(this.getDataValue('current_product_comparations'));
+        }
+    },
     meli_ids: {
         type: DataTypes.STRING,
         allowNull: true,
