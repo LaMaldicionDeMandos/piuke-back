@@ -38,7 +38,7 @@ router.get('/full', (req, res) => {
             console.log("Products: " + JSON.stringify(products));
             res.send(products)
         })
-        .catch(e => res.status(400).send());
+        .catch(e => res.status(400).send(e));
 });
 
 router.patch('/:code',(req, res) => {
