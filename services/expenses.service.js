@@ -14,8 +14,8 @@ class ExpenseService {
 
     getExpenses(year = undefined, month = undefined) {
         if (!year && !month) return this.#getAllExpenses();
-        const dateRange = getDateRange(year, month);
-        return getExpensesFromRange(dateRange);
+        const dateRange = this.#getDateRange(year, month);
+        return this.#getExpensesFromRange(dateRange);
     }
 
     getExpensesSummary(year = undefined, month = undefined) {
