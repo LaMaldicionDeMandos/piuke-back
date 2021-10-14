@@ -53,7 +53,7 @@ router.get('/:year/:month', KEEP_PROPERTIES, (req, res) => {
 });
 
 router.get('/:year/:month/summary', async (req, res) => {
-    const summary = salesService.getSummary(req.params.year, req.params.month);
+    const summary = await salesService.getSummary(req.params.year, req.params.month);
     res.send({summary: summary});
 });
 
