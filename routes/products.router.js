@@ -33,7 +33,7 @@ router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_qua
 });
 
 router.get('/full', (req, res) => {
-    meliService.getProducts()
+    productsService.getAllProducts()
         .then(products => {
             console.log("Products: " + JSON.stringify(products));
             res.send(products)
