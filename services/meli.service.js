@@ -32,7 +32,7 @@ class MeliService {
 
     getProductsByIds(ids) {
         const pagedIds = _.chunk(ids, REQUEST_LIMIT);
-        const promises = _.map(pagedIds, ids => getItemDetails(ids));
+        const promises = _.map(pagedIds, ids => this.#getItemDetails(ids));
         return Promise.all(promises).then(_.flatten);
     }
 
