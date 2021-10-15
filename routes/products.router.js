@@ -4,6 +4,7 @@ const productsService = require('../services/products.service');
 const meliService = require('../services/meli.service');
 const keepPropertiesAfter = require('./keepPropertiesAfter');
 const { body, validationResult } = require('express-validator');
+const _ = require('lodash');
 
 errorMiddleware = (req, res, next) => {
     const errors = validationResult(req);
@@ -28,6 +29,16 @@ router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_qua
         .then(products => {
             console.log("Products: " + JSON.stringify(products));
             res.send(products)
+        })
+        .catch(e => res.status(400).send());
+});
+
+router.get('/competitions', [keepPropertiesAfter('_id,meli_items(title,price,thumbnail),code,cost,competitions')],(req, res) => {
+    productsService.getAllProducts()
+        .then(products => {
+            console.log("Products: " + JSON.stringify(products));
+            products = _.map(products, (p) => _.assign(p, {competitions: []}));
+            res.send(products);
         })
         .catch(e => res.status(400).send());
 });
