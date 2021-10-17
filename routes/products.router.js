@@ -33,12 +33,20 @@ router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_qua
         .catch(e => res.status(400).send());
 });
 
-router.get('/competitions', [keepPropertiesAfter('_id,meli_items(title,price,thumbnail),code,cost,competitions')],(req, res) => {
+router.get('/competitions', [keepPropertiesAfter('_id,meli_items(title,price,thumbnail),code,cost,product_comparations')],(req, res) => {
     productsService.getAllProducts()
         .then(products => {
             console.log("Products: " + JSON.stringify(products));
             products = _.map(products, (p) => _.assign(p, {competitions: []}));
             res.send(products);
+        })
+        .catch(e => res.status(400).send());
+});
+
+router.post('/:code/competitions', (req, res) => {
+    productsService.addCompetition(req.params.code, req.body)
+        .then(competition => {
+            res.send(competition);
         })
         .catch(e => res.status(400).send());
 });

@@ -141,6 +141,26 @@ class MeliService {
             });
     }
 
+    getExternalItemDetails(sellerId, itemId, offset = 0) {
+        return this.#getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/sites/MLA/search?seller_id=${sellerId}&offset=${offset}`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => {
+                const found = _.find(res.data.results, item => item.id === itemId);
+                if (!found && res.data.paging.offset + res.data.paging.limit < res.data.paging.total) {
+                    return this.getExternalItemDetails(sellerId, itemId, res.data.paging.offset + res.data.paging.limit);
+                }
+                return found;
+            });
+    }
+
     // Private methods
      #getCredentials() {
         if (!credentials || credentials.isExpired()) {

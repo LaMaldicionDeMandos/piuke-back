@@ -81,6 +81,13 @@ class ProductsService {
             .then(productBase => _.assign(productBase, {meli_items: _meliItems}));
     }
 
+    async addCompetition(code, competition) {
+        console.log(`Agregando competencia para ${code} => ${JSON.stringify(competition)}`);
+        const product = await this.#findByCode(code);
+        const meliProduct = await meliService.getExternalItemDetails(competition.seller_id, competition.item_id);
+        return meliProduct;
+    }
+
     // Private methods
     #findByCode = (code) => ProductBase.findOne({where: {code: code}});
 }
