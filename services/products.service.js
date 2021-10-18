@@ -81,11 +81,45 @@ class ProductsService {
             .then(productBase => _.assign(productBase, {meli_items: _meliItems}));
     }
 
-    async addCompetition(code, competition) {
-        console.log(`Agregando competencia para ${code} => ${JSON.stringify(competition)}`);
-        const product = await this.#findByCode(code);
-        const meliProduct = await meliService.getExternalItemDetails(competition.seller_id, competition.item_id);
-        return meliProduct;
+    getAllProductCompetitions() {
+        return this.getAllProducts()
+            .then(products => {
+                const promises = _.reduce(products, (proms, product) => {
+                    _.forEach(product.product_comparations, (comp) => {
+                        const promise = meliService.getExternalItemDetails(comp.owner_id, comp.item_id);
+                        promise.then(meliItem => comp.new_price = meliItem.price);
+                        proms.push(promise);
+                    });
+                    return proms;
+                }, []);
+                return Promise.all(promises).then(() => products);
+            });
+    }
+
+    async syncCompetition(code) {
+        const productBase = await this.#findByCode(code);
+        const product = productBase.toJSON();
+        product.product_comparations = _.map(product.product_comparations, (comp) => {
+            comp.old_price = comp.new_price;
+            return comp;
+        });
+        productBase.update({product_comparations: product.product_comparations});
+        return product;
+    }
+
+    async addCompetition(code, competitionData) {
+        const productBase = await this.#findByCode(code);
+        const product = productBase.toJSON();
+        const meliProduct = await meliService.getExternalItemDetails(competitionData.owner_id, competitionData.item_id);
+        const competition = {
+            owner_id: competitionData.owner_id,
+            item_id: competitionData.item_id,
+            item_link: meliProduct.permalink,
+            old_price: meliProduct.price,
+            new_price: meliProduct.price};
+        product.product_comparations.push(competition);
+        productBase.update({product_comparations: product.product_comparations});
+        return product;
     }
 
     // Private methods

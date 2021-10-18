@@ -34,13 +34,20 @@ router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_qua
 });
 
 router.get('/competitions', [keepPropertiesAfter('_id,meli_items(title,price,thumbnail),code,cost,product_comparations')],(req, res) => {
-    productsService.getAllProducts()
+    productsService.getAllProductCompetitions()
         .then(products => {
             console.log("Products: " + JSON.stringify(products));
-            products = _.map(products, (p) => _.assign(p, {competitions: []}));
             res.send(products);
         })
         .catch(e => res.status(400).send());
+});
+
+router.post('/:code/competitions/sync',(req, res) => {
+    productsService.syncCompetition(req.params.code)
+        .then(competition => {
+            res.send(competition);
+        })
+        .catch(e => res.status(400).send(e));
 });
 
 router.post('/:code/competitions', (req, res) => {
@@ -48,7 +55,7 @@ router.post('/:code/competitions', (req, res) => {
         .then(competition => {
             res.send(competition);
         })
-        .catch(e => res.status(400).send());
+        .catch(e => res.status(400).send(e));
 });
 
 router.get('/full', (req, res) => {
