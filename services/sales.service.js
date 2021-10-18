@@ -48,6 +48,7 @@ class SalesService {
     #findByCode = (code) => ProductBase.findOne({where: {code: code}})
 
     #addProduct = (order) => {
+        console.log("===================== Busco el product base y no lo encuentro? seller_sku: " + order.item.seller_sku);
         const basePromise = this.#findByCode(order.item.seller_sku).then(p => p.toJSON());
         const meliItemPromise = meliService.getProductsById(order.item.id);
         return Promise.all([basePromise, meliItemPromise])
