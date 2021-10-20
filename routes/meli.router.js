@@ -23,4 +23,13 @@ router.get('/categories', async (req, res, next) => {
     }
 });
 
+router.get('/externals/:sellerId/:itemId', async (req, res, next) => {
+    try {
+        const item = await service.getExternalItemDetails(req.params.sellerId, req.params.itemId);
+        res.send(item);
+    }catch(e) {
+        res.sendStatus(400);
+    }
+});
+
 module.exports = router;

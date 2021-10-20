@@ -147,7 +147,7 @@ class MeliService {
             .then(credentials => {
                 return {
                     baseURL: MELI_BASE_URL,
-                    url: `/sites/MLA/search?seller_id=${sellerId}&offset=${offset}`,
+                    url: `/sites/MLA/search?nickname=${sellerId}&offset=${offset}`,
                     headers: {'Authorization': `Bearer ${credentials.access_token}`}
                 };
             })
