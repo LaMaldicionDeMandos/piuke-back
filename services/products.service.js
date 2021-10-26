@@ -125,9 +125,11 @@ class ProductsService {
     async updateCompetition(code, comp) {
         const productBase = await this.#findByCode(code);
         const product = productBase.toJSON();
-        console.log(`================= updating ${product.product_comparations} with ${comp}`);
+        console.log(`================= updating ${JSON.stringify(product.product_comparations)} with ${JSON.stringify(comp)}`);
         const index = _.findIndex(product.product_comparations, (c) => comp.ownerId === c.ownerId);
+        console.log(`================= encontre el indice ${index}`);
         product.product_comparations.splice(index, 1, comp);
+        console.log(`================= nuevas comps ${product.product_comparations}`);
         productBase.update({product_comparations: product.product_comparations});
         return product;
     }
