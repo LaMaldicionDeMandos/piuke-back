@@ -122,6 +122,15 @@ class ProductsService {
         return product;
     }
 
+    async updateCompetition(code, comp) {
+        const productBase = await this.#findByCode(code);
+        const product = productBase.toJSON();
+        const index = _.findIndex(product.product_comparations, (c) => comp.owner_id === c.owner_id);
+        product.product_comparations.splice(index, 1, comp);
+        productBase.update({product_comparations: product.product_comparations});
+        return product;
+    }
+
     // Private methods
     #findByCode = (code) => ProductBase.findOne({where: {code: code}});
 }

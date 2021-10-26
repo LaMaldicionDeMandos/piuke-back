@@ -58,6 +58,12 @@ router.post('/:code/competitions', (req, res) => {
         .catch(e => res.status(400).send(e));
 });
 
+router.put('/:code/competitions', (req, res) => {
+    productsService.updateCompetition(req.params.code, req.body)
+        .then(res.send)
+        .catch(e => res.status(400).send(e));
+});
+
 router.get('/full', (req, res) => {
     productsService.getAllProducts()
         .then(products => {
