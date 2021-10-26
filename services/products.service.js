@@ -36,7 +36,6 @@ class ProductsService {
     getAllProducts() {
         return this.getProductBases()
             .then(productBases => {
-                console.log("========= consigo los productos?");
                const ids = _.chain(productBases)
                    .filter(p => !_.isEmpty(p.meli_ids))
                    .map('meli_ids')
@@ -113,11 +112,11 @@ class ProductsService {
         const product = productBase.toJSON();
         const meliProduct = await meliService.getExternalItemDetails(competitionData.owner_id, competitionData.item_id);
         const competition = {
-            owner_id: competitionData.owner_id,
-            item_id: competitionData.item_id,
-            item_link: meliProduct.permalink,
-            old_price: meliProduct.price,
-            new_price: meliProduct.price};
+            ownerI: competitionData.owner_id,
+            itemId: competitionData.item_id,
+            itemLink: meliProduct.permalink,
+            oldPrice: meliProduct.price,
+            newPrice: meliProduct.price};
         product.product_comparations.push(competition);
         productBase.update({product_comparations: product.product_comparations});
         return product;
@@ -126,7 +125,7 @@ class ProductsService {
     async updateCompetition(code, comp) {
         const productBase = await this.#findByCode(code);
         const product = productBase.toJSON();
-        const index = _.findIndex(product.product_comparations, (c) => comp.owner_id === c.owner_id);
+        const index = _.findIndex(product.product_comparations, (c) => comp.ownerId === c.ownerId);
         product.product_comparations.splice(index, 1, comp);
         productBase.update({product_comparations: product.product_comparations});
         return product;
