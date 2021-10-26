@@ -101,6 +101,7 @@ class ProductsService {
         const product = productBase.toJSON();
         product.product_comparations = _.map(product.product_comparations, (comp) => {
             comp.old_price = comp.new_price;
+            comp.checked = false;
             return comp;
         });
         productBase.update({product_comparations: product.product_comparations});
