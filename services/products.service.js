@@ -36,6 +36,7 @@ class ProductsService {
     getAllProducts() {
         return this.getProductBases()
             .then(productBases => {
+                console.log("========= consigo los productos?");
                const ids = _.chain(productBases)
                    .filter(p => !_.isEmpty(p.meli_ids))
                    .map('meli_ids')
