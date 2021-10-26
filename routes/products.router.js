@@ -60,7 +60,7 @@ router.post('/:code/competitions', (req, res) => {
 
 router.put('/:code/competitions', (req, res) => {
     productsService.updateCompetition(req.params.code, req.body)
-        .then(res.send)
+        .then(res.send.bind(res))
         .catch(e => res.status(400).send(e));
 });
 
