@@ -86,8 +86,8 @@ class ProductsService {
             .then(products => {
                 const promises = _.reduce(products, (proms, product) => {
                     _.forEach(product.product_comparations, (comp) => {
-                        const promise = meliService.getExternalItemDetails(comp.owner_id, comp.item_id);
-                        promise.then(meliItem => comp.new_price = meliItem.price);
+                        const promise = meliService.getExternalItemDetails(comp.ownerId, comp.itemId);
+                        promise.then(meliItem => comp.newPrice = meliItem.price);
                         proms.push(promise);
                     });
                     return proms;
@@ -100,7 +100,7 @@ class ProductsService {
         const productBase = await this.#findByCode(code);
         const product = productBase.toJSON();
         product.product_comparations = _.map(product.product_comparations, (comp) => {
-            comp.old_price = comp.new_price;
+            comp.oldPrice = comp.newPrice;
             comp.checked = false;
             return comp;
         });
@@ -111,7 +111,7 @@ class ProductsService {
     async addCompetition(code, competitionData) {
         const productBase = await this.#findByCode(code);
         const product = productBase.toJSON();
-        const meliProduct = await meliService.getExternalItemDetails(competitionData.owner_id, competitionData.item_id);
+        const meliProduct = await meliService.getExternalItemDetails(competitionData.ownerId, competitionData.itemId);
         const competition = {
             ownerI: competitionData.owner_id,
             itemId: competitionData.item_id,
