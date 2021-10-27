@@ -111,7 +111,7 @@ class ProductsService {
     async addCompetition(code, competitionData) {
         const productBase = await this.#findByCode(code);
         const product = productBase.toJSON();
-        const meliProduct = await meliService.getExternalItemDetails(competitionData.ownerId, competitionData.itemId);
+        const meliProduct = await meliService.getExternalItemDetails(competitionData.owner_id, competitionData.item_id);
         const competition = {
             ownerI: competitionData.owner_id,
             itemId: competitionData.item_id,
