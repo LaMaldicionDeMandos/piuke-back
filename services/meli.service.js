@@ -1,5 +1,6 @@
 const axios = require('axios').default;
 const _ = require('lodash');
+const Cache = require('ttl-mem-cache');
 
 const MELI_ROOT_CATEGORY = 'MLA1132';
 const MELI_BASE_URL = 'https://api.mercadolibre.com';
@@ -8,6 +9,8 @@ const MELI_CREDENTIALS = {
     client_id: process.env.MELI_APP_ID,
     client_secret: process.env.MELI_SECRET
 };
+const cache = new Cache();
+const CACHE_EXTERNAL_ITEM_TTL = 1000*60*60*12;
 const MELI_SELLER_ID = process.env.MELI_USER;
 const REQUEST_LIMIT = 20;
 let credentials;
@@ -142,6 +145,8 @@ class MeliService {
     }
 
     getExternalItemDetails(sellerId, itemId, offset = 0) {
+        const cachedItems = cache.get(`${sellerId}-${itemId}-external_item`);
+        if (cachedItems) return Promise.resolve(cachedItems);
         return this.#getCredentials()
             .then(credentials => credentials.credentials)
             .then(credentials => {
@@ -157,6 +162,7 @@ class MeliService {
                 if (!found && res.data.paging.offset + res.data.paging.limit < res.data.paging.total) {
                     return this.getExternalItemDetails(sellerId, itemId, res.data.paging.offset + res.data.paging.limit);
                 }
+                cache.set(`${sellerId}-${itemId}-external_item`, found, CACHE_EXTERNAL_ITEM_TTL);
                 return found;
             });
     }
