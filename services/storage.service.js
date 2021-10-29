@@ -14,17 +14,6 @@ sequelize.define('ProductBase', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
     code: {type: DataTypes.STRING, allowNull: false},
     cost: {type: DataTypes.FLOAT , allowNull: false},
-    product_comparations: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        defaultValue: '[]',
-        set(comparations) {
-            this.setDataValue('product_comparations',JSON.stringify(comparations));
-        },
-        get() {
-            return JSON.parse(this.getDataValue('product_comparations'));
-        }
-    },
     meli_ids: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -38,11 +27,23 @@ sequelize.define('ProductBase', {
     }
 });
 
+sequelize.define('ProductComparation', {
+    _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
+    ownerId: {type: DataTypes.STRING, allowNull: false, defaultValue: ''},
+    itemId: {type: DataTypes.STRING , allowNull: false, defaultValue: ''},
+    itemLink: {type: DataTypes.STRING, allowNull: false, defaultValue: ''},
+    oldPrice: {type: DataTypes.FLOAT , allowNull: false},
+    newPrice: {type: DataTypes.FLOAT , allowNull: false}
+});
+
 sequelize.define('Expense', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
     desc: {type: DataTypes.STRING, allowNull: true, defaultValue: ''},
     value: {type: DataTypes.FLOAT , allowNull: false}
 });
+
+sequelize.models.ProductBase.hasMany(sequelize.models.ProductComparation);
+sequelize.models.ProductComparation.belongsTo(sequelize.models.ProductBase);
 
 (async () => {
     console.log("Ejecucion asyncrona");

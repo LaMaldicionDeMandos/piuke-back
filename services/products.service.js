@@ -113,7 +113,7 @@ class ProductsService {
         const product = productBase.toJSON();
         const meliProduct = await meliService.getExternalItemDetails(competitionData.owner_id, competitionData.item_id);
         const competition = {
-            ownerI: competitionData.owner_id,
+            ownerId: competitionData.owner_id,
             itemId: competitionData.item_id,
             itemLink: meliProduct.permalink,
             oldPrice: meliProduct.price,
