@@ -19,7 +19,7 @@ sequelize.define('ProductBase', {
         allowNull: true,
         defaultValue: '[]',
         set(ids) {
-            this.setDataValue('meli_ids',JSON.stringify(ids));
+            this.setDataValue('meli_ids', JSON.stringify(ids));
         },
         get() {
             return JSON.parse(this.getDataValue('meli_ids'));
@@ -33,7 +33,18 @@ sequelize.define('ProductComparation', {
     itemId: {type: DataTypes.STRING , allowNull: false, defaultValue: ''},
     itemLink: {type: DataTypes.STRING, allowNull: false, defaultValue: ''},
     oldPrice: {type: DataTypes.FLOAT , allowNull: false},
-    newPrice: {type: DataTypes.FLOAT , allowNull: false}
+    newPrice: {type: DataTypes.FLOAT , allowNull: false},
+    checked: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'false',
+        set(c) {
+            this.setDataValue('checked', c ? 'true' : 'false');
+        },
+        get() {
+            return this.getDataValue('checked') === 'true';
+        }
+    }
 });
 
 sequelize.define('Expense', {
@@ -42,7 +53,7 @@ sequelize.define('Expense', {
     value: {type: DataTypes.FLOAT , allowNull: false}
 });
 
-sequelize.models.ProductBase.hasMany(sequelize.models.ProductComparation);
+sequelize.models.ProductBase.hasMany(sequelize.models.ProductComparation, { as: "product_comparations" });
 sequelize.models.ProductComparation.belongsTo(sequelize.models.ProductBase);
 
 (async () => {
@@ -51,6 +62,7 @@ sequelize.models.ProductComparation.belongsTo(sequelize.models.ProductBase);
         await sequelize.authenticate();
         console.log('Authenticated');
         await sequelize.models.ProductBase.sync({alter: true});
+        await sequelize.models.ProductComparation.sync({alter: true});
         await sequelize.models.Expense.sync({alter: true});
         console.log('Synchronized');
     } catch (e) {

@@ -4,6 +4,7 @@ const meliService = require('./meli.service');
 const _ = require('lodash');
 
 const ProductBase = db.models.ProductBase;
+const ProductComparation = db.models.ProductComparation;
 
 class ProductsService {
     constructor() {
@@ -14,7 +15,7 @@ class ProductsService {
     }
 
     getProductBases() {
-        return ProductBase.findAll().catch(e => console.log(JSON.stringify(e)));
+        return ProductBase.findAll({include: 'product_comparations'}).catch(e => console.log(JSON.stringify(e)));
     }
 
     getProductByCode(code) {
@@ -98,42 +99,36 @@ class ProductsService {
 
     async syncCompetition(code) {
         const productBase = await this.#findByCode(code);
-        const product = productBase.toJSON();
-        product.product_comparations = _.map(product.product_comparations, (comp) => {
-            comp.oldPrice = comp.newPrice;
-            comp.checked = false;
-            return comp;
-        });
-        productBase.update({product_comparations: product.product_comparations});
-        return product;
+        await ProductComparation.findAll({where: {ProductBaseId: productBase._id}})
+            .then(comps => Promise.all(_.map(comps, (comp) => comp.update({oldPrice: comp.newPrice, checked: false}))));
+        return (await this.#findByCode(code)).toJSON();
     }
 
     async addCompetition(code, competitionData) {
         const productBase = await this.#findByCode(code);
-        const product = productBase.toJSON();
         const meliProduct = await meliService.getExternalItemDetails(competitionData.owner_id, competitionData.item_id);
+
         const competition = {
+            ProductBaseId: productBase._id,
             ownerId: competitionData.owner_id,
             itemId: competitionData.item_id,
             itemLink: meliProduct.permalink,
             oldPrice: meliProduct.price,
-            newPrice: meliProduct.price};
-        product.product_comparations.push(competition);
-        productBase.update({product_comparations: product.product_comparations});
-        return product;
+            newPrice: meliProduct.price,
+            checked: false};
+        await ProductComparation.create(competition);
+        return (await this.#findByCode(code)).toJSON();
     }
 
     async updateCompetition(code, comp) {
         const productBase = await this.#findByCode(code);
-        const product = productBase.toJSON();
-        const index = _.findIndex(product.product_comparations, (c) => comp.ownerId === c.ownerId);
-        product.product_comparations.splice(index, 1, comp);
-        productBase.update({product_comparations: product.product_comparations});
-        return product;
+        await ProductComparation.findOne({where: {ProductBaseId: productBase._id, ownerID: comp.ownerId}})
+            .then(c => c.update({oldPrice: comp.newPrice, checked: false}));
+        return ((await this.#findByCode(code)).toJSON());
     }
 
     // Private methods
-    #findByCode = (code) => ProductBase.findOne({where: {code: code}});
+    #findByCode = (code) => ProductBase.findOne({where: {code: code}, include: 'product_comparations'});
 }
 
 const productService = new ProductsService();
