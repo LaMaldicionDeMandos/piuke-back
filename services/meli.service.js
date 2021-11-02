@@ -162,7 +162,7 @@ class MeliService {
                 if (!found && res.data.paging.offset + res.data.paging.limit < res.data.paging.total) {
                     return this.getExternalItemDetails(sellerId, itemId, res.data.paging.offset + res.data.paging.limit);
                 }
-                cache.set(`${sellerId}-${itemId}-external_item`, found, CACHE_EXTERNAL_ITEM_TTL);
+                if (found) cache.set(`${sellerId}-${itemId}-external_item`, found, CACHE_EXTERNAL_ITEM_TTL);
                 return found;
             });
     }
