@@ -122,7 +122,7 @@ class ProductsService {
 
     async updateCompetition(code, comp) {
         const productBase = await this.#findByCode(code);
-        await ProductComparation.findOne({where: {ProductBaseId: productBase._id, ownerID: comp.ownerId}})
+        await ProductComparation.findOne({where: {ProductBaseId: productBase._id, ownerId: comp.ownerId}})
             .then(c => c.update({oldPrice: comp.newPrice, checked: false}));
         return ((await this.#findByCode(code)).toJSON());
     }
