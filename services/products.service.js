@@ -88,7 +88,12 @@ class ProductsService {
                 const promises = _.reduce(products, (proms, product) => {
                     _.forEach(product.product_comparations, (comp) => {
                         const promise = meliService.getExternalItemDetails(comp.ownerId, comp.itemId);
-                        promise.then(meliItem => comp.newPrice = meliItem.price);
+                        promise.then(meliItem => {
+                            if (comp.newPrice !== meliItem.price) {
+                                comp.newPrice = meliItem.price;
+                                ProductComparation.update({newPrice: meliItem.price}, {where: {itemId: comp.itemId}});
+                            }
+                        });
                         proms.push(promise);
                     });
                     return proms;
@@ -123,7 +128,7 @@ class ProductsService {
     async updateCompetition(code, comp) {
         const productBase = await this.#findByCode(code);
         await ProductComparation.findOne({where: {ProductBaseId: productBase._id, ownerId: comp.ownerId}})
-            .then(c => c.update({oldPrice: comp.newPrice, checked: comp.checked}));
+            .then(c => c.update({checked: comp.checked}));
         return ((await this.#findByCode(code)).toJSON());
     }
 
