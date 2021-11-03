@@ -49,7 +49,10 @@ router.get('/:year/:month', KEEP_PROPERTIES, (req, res) => {
             console.log("Sales: " + JSON.stringify(sales));
             res.send(sales);
         })
-        .catch(e => res.status(400).send());
+        .catch(e => {
+            console.error(`Error => ${JSON.stringify(e.stack)}`);
+            res.status(400).send(e.stack)
+        });
 });
 
 router.get('/:year/:month/summary', async (req, res) => {
