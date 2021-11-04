@@ -13,7 +13,7 @@ const sequelize = new Sequelize(connectionParam);
 sequelize.define('ProductBase', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
     code: {type: DataTypes.STRING, allowNull: false},
-    cost: {type: DataTypes.FLOAT , allowNull: false},
+    cost: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
     meli_ids: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -32,8 +32,8 @@ sequelize.define('ProductComparation', {
     ownerId: {type: DataTypes.STRING, allowNull: false, defaultValue: ''},
     itemId: {type: DataTypes.STRING , allowNull: false, defaultValue: ''},
     itemLink: {type: DataTypes.STRING, allowNull: false, defaultValue: ''},
-    oldPrice: {type: DataTypes.FLOAT , allowNull: false},
-    newPrice: {type: DataTypes.FLOAT , allowNull: false},
+    oldPrice: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
+    newPrice: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
     checked: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -50,7 +50,7 @@ sequelize.define('ProductComparation', {
 sequelize.define('Expense', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
     desc: {type: DataTypes.STRING, allowNull: true, defaultValue: ''},
-    value: {type: DataTypes.FLOAT , allowNull: false}
+    value: {type: DataTypes.DECIMAL(10, 2) , allowNull: false}
 });
 
 sequelize.models.ProductBase.hasMany(sequelize.models.ProductComparation, { as: "product_comparations" });
