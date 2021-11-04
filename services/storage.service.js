@@ -41,8 +41,21 @@ sequelize.define('ProductComparation', {
     ownerId: {type: DataTypes.STRING, allowNull: false, defaultValue: ''},
     itemId: {type: DataTypes.STRING , allowNull: false, defaultValue: ''},
     itemLink: {type: DataTypes.STRING, allowNull: false, defaultValue: ''},
-    oldPrice: {type: DataTypes.DECIMAL(10, 2) , allowNull: false, },
-    newPrice: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
+    oldPrice: {type: DataTypes.DECIMAL(10, 2) , allowNull: false,
+            set(v) {
+                this.setDataValue('oldPrice', v.toString());
+            },
+            get() {
+                return Number.parseFloat(this.getDataValue('oldPrice'));
+            }
+    },
+    newPrice: {type: DataTypes.DECIMAL(10, 2) , allowNull: false,
+        set(v) {
+            this.setDataValue('newPrice', v.toString());
+        },
+        get() {
+            return Number.parseFloat(this.getDataValue('newPrice'));
+        }},
     checked: {
         type: DataTypes.STRING,
         allowNull: true,
