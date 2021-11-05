@@ -1,6 +1,7 @@
 const db = require('./storage.service');
 const meliService = require('./meli.service');
 
+const { DateTime } = require("luxon");
 const _ = require('lodash');
 
 const ProductBase = db.models.ProductBase;
@@ -59,6 +60,12 @@ class ProductsService {
                         });
                     })
             );
+    }
+
+    async getStock() {
+        const products = await this.getAllProducts();
+        return _.map(products, (p) =>
+            _.assign(p, {monthly_stock: this.#calculateStock(p), reposition: this.#calculateReposition(p)}));
     }
 
     update(code, change) {
@@ -134,6 +141,28 @@ class ProductsService {
 
     // Private methods
     #findByCode = (code) => ProductBase.findOne({where: {code: code}, include: 'product_comparations'});
+
+    #calculateStock = (p) => {
+        const sold = this.#calculateSoldProducts(p);
+        const today = DateTime.now();
+        const startDate = DateTime.fromISO(p.meli_items[0].start_time);
+        const diffInDays = today.diff(startDate, 'days').toObject();
+        console.log(`startDate: ${JSON.stringify(startDate.toObject())} -> ${JSON.stringify(diffInDays)}`);
+        return Math.round(30*sold/diffInDays.days) + 1;
+    }
+
+    #calculateSoldProducts = (p) => {
+        return _.reduce(p.meli_items, (sum, item) => sum + item.sold_quantity, 0);
+    }
+
+    #calculateReposition = (p) => {
+        const sold = this.#calculateSoldProducts(p);
+        const today = DateTime.now();
+        const startDate = DateTime.fromISO(p.meli_items[0].start_time);
+        const diffInDays = today.diff(startDate, 'days').toObject();
+        console.log(`startDate: ${JSON.stringify(startDate.toObject())} -> ${JSON.stringify(diffInDays)}`);
+        return Math.round(30*1.5*sold/diffInDays.days) + 1;
+    }
 }
 
 const productService = new ProductsService();

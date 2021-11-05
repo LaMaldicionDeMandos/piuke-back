@@ -33,6 +33,14 @@ router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_qua
         .catch(e => res.status(400).send());
 });
 
+router.get('/stock', [keepPropertiesAfter('_id,meli_items(title,available_quantity,sold_quantity,start_time,thumbnail,status),code,monthly_stock,reposition')],(req, res) => {
+    productsService.getStock()
+        .then(products => {
+            res.send(products)
+        })
+        .catch(e => res.status(400).send());
+});
+
 router.get('/competitions', [keepPropertiesAfter('_id,meli_items(title,price,thumbnail),code,cost,product_comparations')],(req, res) => {
     productsService.getAllProductCompetitions()
         .then(products => {
