@@ -12,6 +12,7 @@ const meliRouter = require('./routes/meli.router');
 const expensesRouter = require('./routes/expenses.router');
 const bestSellersRouter = require('./routes/best_sellers.router');
 const whatsappRouter = require('./routes/whatsapp.router');
+const ordersRouter = require('./routes/orders.router');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(cookieParser());
 
 app.use('/health', healthRouter);
 app.use('/products', productsRouter);
+app.use('/orders', ordersRouter);
 app.use('/sales', salesRouter);
 app.use('/meli', meliRouter);
 app.use('/expenses', expensesRouter);

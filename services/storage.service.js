@@ -69,6 +69,11 @@ sequelize.define('ProductComparation', {
     }
 });
 
+sequelize.define('PurchaseOrder', {
+    _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
+    count: {type: DataTypes.SMALLINT, allowNull: false, defaultValue: 0}
+});
+
 sequelize.define('Expense', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
     desc: {type: DataTypes.STRING, allowNull: true, defaultValue: ''},
@@ -77,6 +82,8 @@ sequelize.define('Expense', {
 
 sequelize.models.ProductBase.hasMany(sequelize.models.ProductComparation, { as: "product_comparations" });
 sequelize.models.ProductComparation.belongsTo(sequelize.models.ProductBase);
+sequelize.models.PurchaseOrder.hasOne(sequelize.models.ProductBase, {as: 'product_base'});
+sequelize.models.ProductBase.belongsTo(sequelize.models.PurchaseOrder, {foreignKey: 'order_id'});
 
 (async () => {
     console.log("Ejecucion asyncrona");
@@ -85,6 +92,7 @@ sequelize.models.ProductComparation.belongsTo(sequelize.models.ProductBase);
         console.log('Authenticated');
         await sequelize.models.ProductBase.sync({alter: true});
         await sequelize.models.ProductComparation.sync({alter: true});
+        await sequelize.models.PurchaseOrder.sync({alter: true});
         await sequelize.models.Expense.sync({alter: true});
         console.log('Synchronized');
     } catch (e) {
