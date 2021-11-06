@@ -77,7 +77,13 @@ sequelize.define('PurchaseOrder', {
 sequelize.define('Expense', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
     desc: {type: DataTypes.STRING, allowNull: true, defaultValue: ''},
-    value: {type: DataTypes.DECIMAL(10, 2) , allowNull: false}
+    value: {type: DataTypes.DECIMAL(10, 2) , allowNull: false,
+        set(v) {
+            this.setDataValue('value', v.toString());
+        },
+        get() {
+            return Number.parseFloat(this.getDataValue('value'));
+        }}
 });
 
 sequelize.models.ProductBase.hasMany(sequelize.models.ProductComparation, { as: "product_comparations" });
