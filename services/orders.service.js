@@ -21,6 +21,11 @@ class OrdersService {
             .catch(e => console.log(JSON.stringify(e)));
     }
 
+    async deleteOrder(id) {
+        const order = await PurchaseOrder.findByPk(id);
+        order.destroy();
+    }
+
     #findProductByCode = (code) => ProductBase.findOne({where: {code: code}});
 }
 
