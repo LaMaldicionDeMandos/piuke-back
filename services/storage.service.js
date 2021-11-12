@@ -23,6 +23,8 @@ sequelize.define('ProductBase', {
             return Number.parseFloat(this.getDataValue('cost'));
         }
     },
+    thumbnail: {type: DataTypes.STRING, allowNull: true},
+    title: {type: DataTypes.STRING, allowNull: true},
     meli_ids: {
         type: DataTypes.STRING,
         allowNull: true,

@@ -86,7 +86,11 @@ class ProductsService {
                 return _.map(meliItems, 'id');
             })
             .then(meliIds => this.update(code, {meli_ids: meliIds}))
-            .then(productBase => _.assign(productBase, {meli_items: _meliItems}));
+            .then(productBase => _.assign(productBase, {
+                meli_items: _meliItems,
+                thumbnail: _meliItems[0].thumbnail,
+                title: _meliItems[0].title
+            }));
     }
 
     getAllProductCompetitions() {

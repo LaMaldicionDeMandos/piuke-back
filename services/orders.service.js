@@ -23,7 +23,7 @@ class OrdersService {
 
     async deleteOrder(id) {
         const order = await PurchaseOrder.findByPk(id);
-        order.destroy();
+        return order.destroy();
     }
 
     clear() {

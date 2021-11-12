@@ -14,7 +14,7 @@ errorMiddleware = (req, res, next) => {
     next();
 };
 
-router.get('/sync/:code', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id,health,questions,visits),code,cost')],(req, res) => {
+router.get('/sync/:code', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id,health,questions,visits),thumbnail,title,code,cost')],(req, res) => {
     console.log("Sync with meli");
     productsService.syncWithMeli(req.params.code)
         .then(product => {
@@ -24,7 +24,7 @@ router.get('/sync/:code', [keepPropertiesAfter('_id,meli_items(id,title,price,av
         .catch(e => res.status(404).send());
 });
 
-router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id,health,questions,visits),code,cost')],(req, res) => {
+router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id,health,questions,visits),thumbnail,title,code,cost')],(req, res) => {
     productsService.getAllProducts()
         .then(products => {
             console.log("Products: " + JSON.stringify(products));
