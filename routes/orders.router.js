@@ -26,6 +26,14 @@ router.post('', (req, res) => {
         .catch(e => res.status(400).send());
 });
 
+router.delete('/all', (req, res) => {
+    ordersService.clear()
+        .then(() => {
+            res.send({ok: 'ok'});
+        })
+        .catch(e => res.status(400).send());
+});
+
 router.delete('/:id', (req, res) => {
     ordersService.deleteOrder(req.params.id)
         .then(() => {

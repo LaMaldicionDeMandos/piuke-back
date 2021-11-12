@@ -26,6 +26,10 @@ class OrdersService {
         order.destroy();
     }
 
+    clear() {
+        return PurchaseOrder.destroy({where: {}});
+    }
+
     #findProductByCode = (code) => ProductBase.findOne({where: {code: code}});
 }
 
