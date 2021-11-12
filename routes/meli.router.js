@@ -1,9 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const service = require('../services/meli.service');
+const db = require('../services/storage.service');
+
+const PruebaVenta = db.models.PruebaVenta;
 
 router.get('/listeners/auth',  (req, res, next) => {
     console.log(req.path);
+    res.send('ok');
+});
+
+router.get('/listeners/notifications',  (req, res, next) => {
+    console.log(req.path);
+    PruebaVenta.create({});
     res.send('ok');
 });
 

@@ -89,8 +89,6 @@ class ProductsService {
                 title: _meliItems[0].title}))
             .then(productBase => _.assign(productBase, {
                 meli_items: _meliItems,
-                thumbnail: _meliItems[0].thumbnail,
-                title: _meliItems[0].title
             }));
     }
 

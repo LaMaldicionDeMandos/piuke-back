@@ -88,6 +88,10 @@ sequelize.define('Expense', {
         }}
 });
 
+sequelize.define('PruebaVenta', {
+    _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
+});
+
 sequelize.models.ProductBase.hasMany(sequelize.models.ProductComparation, { as: "product_comparations" });
 sequelize.models.ProductComparation.belongsTo(sequelize.models.ProductBase);
 sequelize.models.PurchaseOrder.hasOne(sequelize.models.ProductBase, {as: 'product_base'});
@@ -102,6 +106,7 @@ sequelize.models.ProductBase.belongsTo(sequelize.models.PurchaseOrder, {foreignK
         await sequelize.models.ProductComparation.sync({alter: true});
         await sequelize.models.PurchaseOrder.sync({alter: true});
         await sequelize.models.Expense.sync({alter: true});
+        await sequelize.models.PruebaVenta.sync({alter: true});
         console.log('Synchronized');
     } catch (e) {
         console.log("Error " + JSON.stringify(e));

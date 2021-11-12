@@ -21,7 +21,7 @@ router.get('/sync/:code', [keepPropertiesAfter('_id,meli_items(id,title,price,av
             console.log("Product: " + JSON.stringify(product));
             res.send(product);
         })
-        .catch(e => res.status(404).send());
+        .catch(e => res.status(400).send(e.message));
 });
 
 router.get('', [keepPropertiesAfter('_id,meli_items(id,title,price,available_quantity,sold_quantity,start_time,thumbnail,status,listing_type_id,health,questions,visits),thumbnail,title,code,cost')],(req, res) => {
