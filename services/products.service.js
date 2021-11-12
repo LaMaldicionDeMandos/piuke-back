@@ -85,7 +85,8 @@ class ProductsService {
                 _meliItems = meliItems;
                 return _.map(meliItems, 'id');
             })
-            .then(meliIds => this.update(code, {meli_ids: meliIds}))
+            .then(meliIds => this.update(code, {meli_ids: meliIds, thumbnail: _meliItems[0].thumbnail,
+                title: _meliItems[0].title}))
             .then(productBase => _.assign(productBase, {
                 meli_items: _meliItems,
                 thumbnail: _meliItems[0].thumbnail,
