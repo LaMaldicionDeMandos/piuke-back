@@ -6,6 +6,13 @@ const db = require('../services/storage.service');
 const PruebaVenta = db.models.PruebaVenta;
 
 router.get('/listeners/auth',  (req, res, next) => {
+    console.log("GET");
+    console.log(req.path);
+    res.send('ok');
+});
+
+router.post('/listeners/auth',  (req, res, next) => {
+    console.log("POST");
     console.log(req.path);
     res.send('ok');
 });
