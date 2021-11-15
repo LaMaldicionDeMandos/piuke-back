@@ -11,6 +11,15 @@ router.get('/listeners/auth',  (req, res, next) => {
 });
 
 router.get('/listeners/notifications',  (req, res, next) => {
+    console.log("GET");
+    console.log(req.path);
+    console.log(JSON.stringify(req.body));
+    PruebaVenta.create({});
+    res.send('ok');
+});
+
+router.post('/listeners/notifications',  (req, res, next) => {
+    console.log("POST");
     console.log(req.path);
     console.log(JSON.stringify(req.body));
     PruebaVenta.create({});
