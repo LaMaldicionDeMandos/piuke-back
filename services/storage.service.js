@@ -93,10 +93,34 @@ sequelize.define('Sale', {
     provider: {type: DataTypes.STRING, allowNull: false},
     code: {type: DataTypes.STRING, allowNull: false},
     date: {type: DataTypes.STRING, allowNull: false},
-    amount: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
-    shipping_cost: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
-    fee: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
-    cost: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
+    amount: {type: DataTypes.DECIMAL(10, 2) , allowNull: false,
+        set(v) {
+            this.setDataValue('amount', v.toString());
+        },
+        get() {
+            return Number.parseFloat(this.getDataValue('amount'));
+        }},
+    shipping_cost: {type: DataTypes.DECIMAL(10, 2) , allowNull: false,
+        set(v) {
+            this.setDataValue('shipping_cost', v.toString());
+        },
+        get() {
+            return Number.parseFloat(this.getDataValue('shipping_cost'));
+        }},
+    fee: {type: DataTypes.DECIMAL(10, 2) , allowNull: false,
+        set(v) {
+            this.setDataValue('fee', v.toString());
+        },
+        get() {
+            return Number.parseFloat(this.getDataValue('fee'));
+        }},
+    cost: {type: DataTypes.DECIMAL(10, 2) , allowNull: false,
+        set(v) {
+            this.setDataValue('cost', v.toString());
+        },
+        get() {
+            return Number.parseFloat(this.getDataValue('cost'));
+        }},
     item_code: {type: DataTypes.STRING, allowNull: false},
 });
 

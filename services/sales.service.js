@@ -1,4 +1,5 @@
 const db = require('./storage.service');
+const { Op } = require("sequelize");
 const meliService = require('./meli.service');
 const Cache = require('ttl-mem-cache');
 
@@ -33,6 +34,17 @@ class SalesService {
             });
     }
 
+    getSalesV2(year = undefined, month = undefined) {
+        return Sale.findAll(this.#buildSaleDateQuery(year, month))
+            .then(sales => {
+                const promises = _.chain(sales)
+                    .map(sale => sale.toJSON())
+                    .map(sale => this.#findByCode(sale.item_code).then(product => _.assign(sale, product.toJSON())))
+                    .value();
+                return Promise.all(promises);
+            });
+    }
+
     getCachedSales(year = undefined, month = undefined) {
         const sales = cache.get(`${year}-${month}-sales`);
         if (!sales) return this.getSales(year, month);
@@ -47,6 +59,18 @@ class SalesService {
 
     getPerformances(year = undefined, month = undefined) {
         return this.getCachedSales(year, month).then(this.#salesToPerformances);
+    }
+
+    #buildSaleDateQuery(year, month) {
+        if (!year && !month) return undefined;
+        const like = `${(year || '%')}-${month || ''}%`;
+        return {
+            where: {
+                date: {
+                    [Op.like]: like
+                }
+            }
+        };
     }
 
     // Private Methods
