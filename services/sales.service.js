@@ -8,9 +8,14 @@ const cache = new Cache();
 const CACHE_TTL = 1000*60*5;
 
 const ProductBase = db.models.ProductBase;
+const Sale = db.models.Sale;
 
 class SalesService {
     constructor() {
+    }
+
+    newSale(sale) {
+        return Sale.create(sale);
     }
 
     getSales(year = undefined, month = undefined) {

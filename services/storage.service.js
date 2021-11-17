@@ -88,8 +88,16 @@ sequelize.define('Expense', {
         }}
 });
 
-sequelize.define('PruebaVenta', {
+sequelize.define('Sale', {
     _id: {type: DataTypes.UUID, allowNull: false, defaultValue: Sequelize.UUIDV4,  primaryKey: true},
+    provider: {type: DataTypes.STRING, allowNull: false},
+    code: {type: DataTypes.STRING, allowNull: false},
+    date: {type: DataTypes.STRING, allowNull: false},
+    amount: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
+    shipping_cost: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
+    fee: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
+    cost: {type: DataTypes.DECIMAL(10, 2) , allowNull: false},
+    item_code: {type: DataTypes.STRING, allowNull: false},
 });
 
 sequelize.models.ProductBase.hasMany(sequelize.models.ProductComparation, { as: "product_comparations" });
@@ -106,7 +114,7 @@ sequelize.models.ProductBase.belongsTo(sequelize.models.PurchaseOrder, {foreignK
         await sequelize.models.ProductComparation.sync({alter: true});
         await sequelize.models.PurchaseOrder.sync({alter: true});
         await sequelize.models.Expense.sync({alter: true});
-        await sequelize.models.PruebaVenta.sync({alter: true});
+        await sequelize.models.Sale.sync({alter: true});
         console.log('Synchronized');
     } catch (e) {
         console.log("Error " + JSON.stringify(e));

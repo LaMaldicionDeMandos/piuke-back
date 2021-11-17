@@ -5,7 +5,7 @@ const router = express.Router();
 
 const KEEP_PROPERTIES = [keepPropertiesAfter('payments(total_paid_amount,transaction_amount,date_approved,shipping_cost),order_items(item(title,code,cost,meli_item(id,thumbnail)),quantity,sale_fee,unit_price,listing_type_id,full_unit_price),buyer,total_amount,paid_amount')];
 
-router.get('/', KEEP_PROPERTIES, (req, res) => {
+router.get('/', (req, res) => {
     salesService.getSales()
         .then(sales => {
             console.log("Sales: " + JSON.stringify(sales));
@@ -13,6 +13,15 @@ router.get('/', KEEP_PROPERTIES, (req, res) => {
         })
         .catch(e => res.status(400).send());
     });
+
+router.post('/', (req, res) => {
+    salesService.newSale(req.body)
+        .then(sale => {
+            console.log("new Sale: " + JSON.stringify(sale));
+            res.send(sale);
+        })
+        .catch(e => res.status(400).send());
+});
 
 router.get('/summary', async (req, res) => {
     const symmary = await salesService.getSummary();

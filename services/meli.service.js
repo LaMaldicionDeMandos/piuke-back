@@ -167,6 +167,20 @@ class MeliService {
             });
     }
 
+    getShipping(id) {
+        return this.#getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/shipments/${id}`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data);
+    }
+
     // Private methods
      #getCredentials() {
         if (!credentials || credentials.isExpired()) {
