@@ -174,6 +174,34 @@ class MeliService {
                 return {
                     baseURL: MELI_BASE_URL,
                     url: `/shipments/${id}`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`, 'x-format-new': 'false'}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data);
+    }
+
+    getSale(id) {
+        return this.#getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/orders/${id}`,
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`}
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data);
+    }
+
+    missing() {
+        return this.#getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/missed_feeds?app_id=${MELI_CREDENTIALS.client_id}`,
                     headers: {'Authorization': `Bearer ${credentials.access_token}`}
                 };
             })

@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const service = require('../services/meli.service');
+const meliSales = require('../services/meli.sales.service');
 
 const ORDER_TOPIC = 'orders_v2';
+var lastOrder;
 
 router.get('/listeners/auth',  (req, res, next) => {
     console.log("GET");
@@ -19,10 +21,21 @@ router.post('/listeners/auth',  (req, res, next) => {
 router.post('/listeners/notifications',  (req, res, next) => {
     const noti = req.body;
     console.log(`New notification -> ${noti.topic}`);
-    if (noti.topic === ORDER_TOPIC) {
-        console.log('New Order');
+    if (noti.topic === ORDER_TOPIC && lastOrder !== noti.resource) {
+        lastOrder = noti.resource;
+        meliSales.newOrder(noti.resource)
+            .then(sale => res.send(sale))
+            .catch((e) => res.status(400).send(e.message));
+    } else {
+        res.send({last_resource: lastOrder, current_resource: noti.resource});
     }
-    res.send('ok');
+});
+
+router.get('/missing', function(req, res, next) {
+    console.log(req.path);
+    service.missing()
+        .then(missing => res.send(missing))
+        .catch(e => res.sendStatus(400));
 });
 
 router.get('/sales', function(req, res, next) {
