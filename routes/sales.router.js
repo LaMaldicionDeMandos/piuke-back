@@ -1,9 +1,6 @@
 const express = require('express');
 const salesService = require('../services/sales.service');
-const keepPropertiesAfter = require('./keepPropertiesAfter');
 const router = express.Router();
-
-const KEEP_PROPERTIES = [keepPropertiesAfter('payments(total_paid_amount,transaction_amount,date_approved,shipping_cost),order_items(item(title,code,cost,meli_item(id,thumbnail)),quantity,sale_fee,unit_price,listing_type_id,full_unit_price),buyer,total_amount,paid_amount')];
 
 router.get('/', (req, res) => {
     salesService.getSales()
@@ -33,7 +30,7 @@ router.get('/performance', async (req, res) => {
     res.send(performances);
 });
 
-router.get('/:year', KEEP_PROPERTIES, (req, res) => {
+router.get('/:year', (req, res) => {
     salesService.getSales(req.params.year)
         .then(sales => {
             console.log("Sales: " + JSON.stringify(sales));
@@ -52,7 +49,7 @@ router.get('/:year/performance', async (req, res) => {
     res.send(performances);
 });
 
-router.get('/:year/:month', KEEP_PROPERTIES, (req, res) => {
+router.get('/:year/:month', (req, res) => {
     salesService.getSales(req.params.year, req.params.month)
         .then(sales => {
             console.log("Sales: " + JSON.stringify(sales));

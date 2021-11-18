@@ -15,7 +15,7 @@ class MeliSalesService {
         const promises = _.map(order.order_items, (item) => this.#getProduct(item.item).then(product =>
                 meliService.getShipping(order.shipping.id)
                     .then(shipping => this.#buildSale(product, order, item, shipping))
-                    .then(sale => salesService.newSale(sale))
+                    .then(sale => salesService.newSaleComplete(sale))
             )
         );
         return Promise.all(promises);

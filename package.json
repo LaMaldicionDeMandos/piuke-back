@@ -21,6 +21,7 @@
     "mysql2": "^2.3.0",
     "sequelize": "^6.6.5",
     "sqlite3": "^4.2.0",
-    "ttl-mem-cache": "^4.1.0"
+    "ttl-mem-cache": "^4.1.0",
+    "uuid": "^8.3.2"
   }
 }
