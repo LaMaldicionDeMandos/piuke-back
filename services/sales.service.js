@@ -1,5 +1,6 @@
 const db = require('./storage.service');
 const { Op } = require("sequelize");
+const meliService = require('./meli.service');
 const _ = require('lodash');
 const { v4: uuidv4 } = require('uuid');
 
@@ -15,14 +16,25 @@ class SalesService {
         return Sale.create(sale);
     }
 
-    async newSale(sale) {
+    async newSale(sale, changeStock = false) {
         const product = await this.#findByCode(sale.item_code);
-        return Sale.create(_.assign(sale, {
+        const s = await Sale.create(_.assign(sale, {
             provider: 'local',
             code: uuidv4(),
             date: (new Date()).toISOString(),
+            cost: product.cost,
             item_code: product.code
         }));
+        if (changeStock) meliService.changeStock(product.meli_ids, -1).then(() => console.log("Stock changed"));
+        return _.chain(s)
+            .thru(s => s.toJSON())
+            .assign(product.toJSON())
+            .value();
+    }
+
+    async existsSale(code) {
+        const sale = await Sale.findOne({where: {code: code}});
+        return sale !== null;
     }
 
     getSales(year = undefined, month = undefined) {

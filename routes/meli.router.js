@@ -4,7 +4,6 @@ const service = require('../services/meli.service');
 const meliSales = require('../services/meli.sales.service');
 
 const ORDER_TOPIC = 'orders_v2';
-var lastOrder;
 
 router.get('/listeners/auth',  (req, res, next) => {
     console.log("GET");
@@ -21,7 +20,7 @@ router.post('/listeners/auth',  (req, res, next) => {
 router.post('/listeners/notifications',  (req, res, next) => {
     const noti = req.body;
     console.log(`New notification -> ${noti.topic}`);
-    if (noti.topic === ORDER_TOPIC && lastOrder !== noti.resource) {
+    if (noti.topic === ORDER_TOPIC) {
         lastOrder = noti.resource;
         meliSales.newOrder(noti.resource)
             .then(sale => res.send(sale))

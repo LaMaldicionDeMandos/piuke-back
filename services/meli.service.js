@@ -209,6 +209,31 @@ class MeliService {
             .then(res => res.data);
     }
 
+    async changeStock(meliIds, delta) {
+        const items = await this.#getItemDetail(meliIds);
+        console.log(`Change stock from ${JSON.stringify(items)}`);
+        _.each(items, item => {
+            this.#updateItem(item.id, {available_quantity: item.available_quantity + delta});
+        });
+    }
+
+    #updateItem(itemId, delta) {
+        return this.#getCredentials()
+            .then(credentials => credentials.credentials)
+            .then(credentials => {
+                return {
+                    baseURL: MELI_BASE_URL,
+                    url: `/items/${itemId}`,
+                    method: 'put',
+                    headers: {'Authorization': `Bearer ${credentials.access_token}`},
+                    data: delta
+                };
+            })
+            .then(config => axios.request(config))
+            .then(res => res.data)
+            .catch(e => console.log(e.message));
+    }
+
     // Private methods
      #getCredentials() {
         if (!credentials || credentials.isExpired()) {
@@ -250,7 +275,7 @@ class MeliService {
             .then(res => res.data[id]);
     }
 
-    #getItemDetails(itemIds) {
+    #getItemDetail(itemIds) {
         return this.#getCredentials()
             .then(credentials => credentials.credentials)
             .then(credentials => {
@@ -261,7 +286,11 @@ class MeliService {
                 };
             })
             .then(config => axios.request(config))
-            .then(res => _.map(res.data, result => result.body))
+            .then(res => _.map(res.data, result => result.body));
+    }
+
+    #getItemDetails(itemIds) {
+        return this.#getItemDetail(itemIds)
             .then(details => {
                 const promises = _.map(details, detail => {
                     const questionsPromise = this.#getItemQuestions(detail.id);

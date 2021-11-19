@@ -10,6 +10,12 @@ class MeliSalesService {
 
     async newOrder(resource) {
         const code = _.split(resource, '/')[2];
+        const exist = await salesService.existsSale(code);
+        if (exist) {
+            const errorMessage = `Sale already exist ${code}`;
+            console.log(errorMessage);
+            return Promise.reject(new Error(errorMessage));
+        }
         const order = await meliService.getSale(code);
         console.log("New SALE!!!!! ====> " + JSON.stringify(order));
         const promises = _.map(order.order_items, (item) => this.#getProduct(item.item).then(product =>

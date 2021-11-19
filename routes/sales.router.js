@@ -12,12 +12,12 @@ router.get('/', (req, res) => {
     });
 
 router.post('/', (req, res) => {
-    salesService.newSale(req.body)
+    salesService.newSale(req.body, true)
         .then(sale => {
             console.log("new Sale: " + JSON.stringify(sale));
             res.send(sale);
         })
-        .catch(e => res.status(400).send());
+        .catch(e => res.status(400).send(e.message));
 });
 
 router.get('/summary', async (req, res) => {
